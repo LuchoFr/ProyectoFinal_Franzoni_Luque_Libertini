@@ -6,7 +6,7 @@ window.onload = function(){
         document.getElementById("usernameBienvenida").innerHTML = username;
     }
     else{
-        window.location.href = "../login";
+        window.location.href = "../";
     }
 }
 
