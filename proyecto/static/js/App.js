@@ -1,3 +1,19 @@
+window.onload = function(){
+    const token = localStorage.getItem("token");
+    if (token){
+        const username = localStorage.getItem("username");
+        const userid = localStorage.getItem("id");
+        document.getElementById("usernameBienvenida").innerHTML = username;
+    }
+    else{
+        window.location.href = "../login";
+    }
+}
+
+
+
+
+
 
 document.addEventListener('DOMContentLoaded', () => {
     // Coloca aquí el código Fetch para obtener y agregar productos
