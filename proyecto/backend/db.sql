@@ -63,5 +63,4 @@ CREATE TABLE IF NOT EXISTS BillDetailsServices(
     FOREIGN KEY (serviceID) REFERENCES Services(id)
 )
 
-INSERT INTO users VALUES
-(1, 'Coca Cola', 'Calle Falsa 123' , 20-234234234-4, 'cocacola@mail.com', 'coca_cola_admin','cocacolita'),
+
