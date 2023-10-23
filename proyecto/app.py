@@ -90,6 +90,7 @@ def client_resource(func):
         return func(*args, **kwargs)
     return decorated
 
+
 @app.route('/')
 def index():
     return render_template("auth/login.html")
@@ -156,7 +157,7 @@ def listar_productos():
 #VER COMENTARIOS DENTRO DE LA FUNCION
 ## GET PRODUCTOS BY ID USER
 @app.route('/users/<int:userID>/products', methods=['GET'])
-#@token_required
+@token_required
 #@user_resources
 def listar_productos(userID):
     #try:

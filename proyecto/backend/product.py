@@ -1,4 +1,6 @@
 class Product:
+
+
      # Constructor de la clase (método especial llamado al crear una instancia)
     def __init__(self, fila):
         # Atributos de instancia (propiedades específicas de cada instancia)
