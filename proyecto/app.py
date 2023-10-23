@@ -5,6 +5,7 @@ import jwt
 import datetime
 from functools import wraps
 from flask_cors import CORS
+from backend.product import Product
 
 
 app = Flask(__name__)
@@ -124,7 +125,8 @@ def loggin():
     return jsonify({"token": token, "username": auth.username, "id": row[0]})
 
 
-'''@app.route('/productos', methods=['GET'])
+'''
+@app.route('/productos', methods=['GET'])
 @token_required
 @user_resources
 def listar_productos():
@@ -145,8 +147,40 @@ def listar_productos():
         return jsonify({"productos": productos, 'mensaje':'Productos Listados'})
         
     except Exception as ex:
-        return jsonify({'mensaje':'Error'})'''
+        return jsonify({'mensaje':'Error'})
+
+'''
     
+
+
+#VER COMENTARIOS DENTRO DE LA FUNCION
+## GET PRODUCTOS BY ID USER
+@app.route('/users/<int:userID>/products', methods=['GET'])
+#@token_required
+#@user_resources
+def listar_productos(userID):
+    #try:
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT * FROM products WHERE userID = {0}'.format(userID))
+         #almacenamos una lista de productos
+        data = cur.fetchall()
+        print(data)
+        #creo una lista para almacenar los productos q aextraigo de la BD
+        productos = []
+        for fila in data: #Objeto producto
+            objProducto = Product(fila)
+            productos.append(objProducto.to_json())
+
+        return jsonify(productos)
+        
+    #except Exception as ex:
+    #    return jsonify({'mensaje':'Error'})
+    
+
+
+
+
+
 
 
 
