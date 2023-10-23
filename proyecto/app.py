@@ -6,6 +6,8 @@ import datetime
 from functools import wraps
 from flask_cors import CORS
 from backend.product import Product
+from backend.service import Service
+from backend.client import Client
 
 
 app = Flask(__name__)
@@ -95,8 +97,8 @@ def client_resource(func):
 def index():
     return render_template("auth/login.html")
 
-@app.route('/dashboard')
-def otra_pagina():
+@app.route('/dashboard/<int:userID>/')
+def otra_pagina(userID):
     return render_template('index.html')
 
 def pagina_no_encontrada(error):
@@ -173,6 +175,46 @@ def listar_productos(userID):
             productos.append(objProducto.to_json())
 
         return jsonify(productos)
+
+#VER COMENTARIOS DENTRO DE LA FUNCION
+## GET services BY ID USER
+@app.route('/users/<int:userID>/services', methods=['GET'])
+@token_required
+#@user_resources
+def listar_servicios(userID):
+    #try:
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT * FROM services WHERE userID = {0}'.format(userID))
+         #almacenamos una lista de servicios
+        data = cur.fetchall()
+        print(data)
+        #creo una lista para almacenar los servicios q extraigo de la BD
+        servicios = []
+        for fila in data: #Objeto servicio
+            objServicio = Service(fila)
+            servicios.append(objServicio.to_json())
+
+        return jsonify(servicios)
+
+#VER COMENTARIOS DENTRO DE LA FUNCION
+## GET clients BY ID USER
+@app.route('/users/<int:userID>/clients', methods=['GET'])
+@token_required
+#@user_resources
+def listar_clientes(userID):
+    #try:
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT * FROM clients WHERE userID = {0}'.format(userID))
+         #almacenamos una lista de clientes
+        data = cur.fetchall()
+        print(data)
+        #creo una lista para almacenar los clientes q extraigo de la BD
+        clientes = []
+        for fila in data: #Objeto cliente
+            objCliente = Client(fila)
+            clientes.append(objCliente.to_json())
+
+        return jsonify(clientes)
         
     #except Exception as ex:
     #    return jsonify({'mensaje':'Error'})
