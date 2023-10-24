@@ -27,7 +27,7 @@ function iniciarSesion() {
                     localStorage.setItem("token", resp.token) //uso para guardar las variables
                     localStorage.setItem("username", resp.username)
                     localStorage.setItem("id", resp.id);
-                    window.location.href = "../dashboard/"+resp.id;
+                    window.location.href = "./index.html";
                 }
                 else {
                     document.getElementById("message").innerHTML = "Usuario o Contraseña incorrecto"; //resp.message;
