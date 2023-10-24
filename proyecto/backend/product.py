@@ -14,7 +14,7 @@ class Product:
 
     def to_json(self):
         return{
-            "id": self._id,
+            "id":self._id,
             "name": self._name,
             "description": self._description,
             "price": self._price,

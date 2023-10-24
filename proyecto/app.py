@@ -93,14 +93,6 @@ def client_resource(func):
     return decorated
 
 
-@app.route('/')
-def index():
-    return render_template("auth/login.html")
-
-@app.route('/dashboard/<int:userID>/')
-def otra_pagina(userID):
-    return render_template('index.html')
-
 def pagina_no_encontrada(error):
     return '<h1> La Pagina que intentas acceder no existe. </h1>', 404
 
@@ -175,6 +167,71 @@ def listar_productos(userID):
             productos.append(objProducto.to_json())
 
         return jsonify(productos)
+
+
+@app.route('/users/<int:userID>/products', methods=['POST'])
+@token_required
+def create_product(userID):
+    if request.method == 'POST':
+        # Obtener los datos del JSON del request
+        name = request.get_json()['name']
+        description = request.get_json()['description']
+        price = request.get_json()['price']
+        stock = request.get_json()['stock']
+
+        # Validar que los datos necesarios estén presentes
+        if not name or not description or price is None or stock is None:
+            return jsonify({"message": "Faltan datos requeridos"}), 400
+
+        # Verificar si un producto con el mismo nombre ya existe
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT * FROM Products WHERE userID = %s AND name = %s', (userID, name))
+        existing_product = cur.fetchone()
+        cur.close()
+
+        if existing_product:
+            return jsonify({"message": "El producto con el mismo nombre ya existe para este usuario"}), 400
+
+        # Crear una nueva entrada en la tabla 'Products' con el userID de la URL
+        cur = mysql.connection.cursor()
+        cur.execute('INSERT INTO Products (name, description, price, stock, userID) VALUES (%s, %s, %s, %s, %s)',
+                    (name, description, price, stock, userID))
+        mysql.connection.commit()
+        cur.close()
+
+        return jsonify({"message": "Producto creado exitosamente"}), 201
+
+@app.route('/users/<int:userID>/products/<string:product_name>', methods=['PUT'])
+@token_required
+def update_product(userID, product_name):
+    if request.method == 'PUT':
+        # Obtener los datos del JSON del request
+        new_name = request.get_json()['name']
+        description = request.get_json()['description']
+        price = request.get_json()['price']
+        stock = request.get_json()['stock']
+
+        # Validar que los datos necesarios estén presentes
+        if not new_name or not description or price is None or stock is None:
+            return jsonify({"message": "Faltan datos requeridos"}), 400
+
+        # Verificar si el producto a actualizar existe
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT * FROM Products WHERE userID = %s AND name = %s', (userID, product_name))
+        existing_product = cur.fetchone()
+        cur.close()
+
+        if not existing_product:
+            return jsonify({"message": "El producto no existe o no pertenece a este usuario"}), 404
+
+        # Actualizar el producto en la tabla 'Products' basado en el nombre y el ID del usuario
+        cur = mysql.connection.cursor()
+        cur.execute('UPDATE Products SET name = %s, description = %s, price = %s, stock = %s WHERE userID = %s AND name = %s',
+                    (new_name, description, price, stock, userID, product_name))
+        mysql.connection.commit()
+        cur.close()
+
+        return jsonify({"message": "Producto actualizado exitosamente"}), 200
 
 #VER COMENTARIOS DENTRO DE LA FUNCION
 ## GET services BY ID USER
