@@ -149,7 +149,7 @@ def listar_productos():
 
 
 #VER COMENTARIOS DENTRO DE LA FUNCION
-## GET PRODUCTOS BY ID USER
+## GET PRODUCTOS BY USERID
 @app.route('/users/<int:userID>/products', methods=['GET'])
 @token_required
 #@user_resources
@@ -232,6 +232,28 @@ def update_product(userID, product_name):
         cur.close()
 
         return jsonify({"message": "Producto actualizado exitosamente"}), 200
+    
+    
+@app.route('/users/<int:userID>/products/<string:product_name>', methods=['DELETE'])
+@token_required
+def delete_product(userID, product_name):
+    if request.method == 'DELETE':
+        # Verificar si el producto a eliminar existe
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT * FROM Products WHERE userID = %s AND name = %s', (userID, product_name))
+        existing_product = cur.fetchone()
+        cur.close()
+
+        if not existing_product:
+            return jsonify({"message": "El producto no existe o no pertenece a este usuario"}), 404
+
+        # Eliminar el producto de la tabla 'Products' basado en el nombre y el ID del usuario
+        cur = mysql.connection.cursor()
+        cur.execute('DELETE FROM Products WHERE userID = %s AND name = %s', (userID, product_name))
+        mysql.connection.commit()
+        cur.close()
+
+        return jsonify({"message": "Producto eliminado exitosamente"}), 200
 
 #VER COMENTARIOS DENTRO DE LA FUNCION
 ## GET services BY ID USER
