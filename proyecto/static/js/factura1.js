@@ -75,7 +75,10 @@ const solicitarDatosFactura = async () => {
 };
 
 function mostrarClientes() {
-    if(!clienteCargado){
+    
+        contenidoPrincipal = document.querySelector(".contenido-principal");
+        //borrar contenido
+        contenidoPrincipal.innerHTML = '';
 
         const h2CargarCliente = document.createElement("h2");
         h2CargarCliente.textContent = "Seleccione un cliente para realizar la Factura" 
@@ -84,12 +87,13 @@ function mostrarClientes() {
         clienteSelect.setAttribute("name", "Clientes");
 
         const listaClientes = [];
-        contenidoPrincipal = document.querySelector(".contenido-principal");
+        
+
         // Opciones para el menú desplegable de cliente
         for (const key in clientsDict) {
             if (clientsDict.hasOwnProperty(key)) {
                 const cliente = clientsDict[key];
-                const nombreCompleto = `${cliente.name} ${cliente.surname} DNI:${cliente.dni}`;
+                const nombreCompleto = `${cliente.name} ${cliente.lastName} DNI:${cliente.dni}`;
                 listaClientes.push({
                     key: key, // Almacena la clave del cliente
                     nombreCompleto: nombreCompleto
@@ -135,8 +139,8 @@ function mostrarClientes() {
             alert("Debe seleccionar un cliente para crear la factura.");
         }
     });
-    clienteCargado = true;
-}
+    
+
 }
 
 
@@ -157,7 +161,7 @@ function mostrarFactura(clienteSeleccionado) {
             facturaContainer.setAttribute("id", "facturaContainer");
 
             const h2 = document.createElement("h2");
-            h2.textContent = `Factura para ${clienteSeleccionado.name} ${clienteSeleccionado.surname} DNI:${clienteSeleccionado.dni}`;
+            h2.textContent = `Factura para ${clienteSeleccionado.name} ${clienteSeleccionado.lastName} DNI:${clienteSeleccionado.dni}`;
 
             
             const h2total = document.createElement("h2");

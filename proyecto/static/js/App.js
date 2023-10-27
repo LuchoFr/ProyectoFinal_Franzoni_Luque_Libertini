@@ -3,13 +3,15 @@ window.onload = function () {
     const token = localStorage.getItem("token");
     if (token) {
         const username = localStorage.getItem("username");
+        const usernameBienvenida = document.getElementById("usernameBienvenida")
 
-        document.getElementById("usernameBienvenida").innerHTML = username;
+        usernameBienvenida.textContent = username;
     }
     else {
         window.location.href = "../";
     }
 }
+
 
 // PARA QUE SE MANTENGA PRESIONADO CUANDO SE CLICKEA
 // ESTO ES CLAVE PARA CAMBIAR CLASES A ELEMENTOS QUE COMPARTEN UNA CLASE
@@ -133,6 +135,7 @@ function cargarProductos() {
                             <td>
                                 <button onclick='eliminar(${producto.id},${userID})' class="small-button rounded-button delete-button">Eliminar</button>
                             </td>
+                            
                 `;
                 tbody.appendChild(fila);
 
@@ -554,6 +557,7 @@ function cargarClientes() {
             <th>Dni</th>
             <th>Cuit</th>
             <th>Email</th>
+            <th>Acciones</th>
         `;
 
             //agrego los encabezados
