@@ -3,12 +3,22 @@ window.onload = function () {
     const token = localStorage.getItem("token");
     if (token) {
         const username = localStorage.getItem("username");
+        console.log(username)
         const usernameBienvenida = document.getElementById("usernameBienvenida")
 
         usernameBienvenida.textContent = username;
+        const diaDeHOy = document.getElementById('diaDeHoy');
+        const currentDate = new Date();
+    
+        const year = currentDate.getFullYear();
+        const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+        const day = currentDate.getDate().toString().padStart(2, '0');
+    
+        const formattedDate = `${year}-${month}-${day}`;
+        diaDeHOy.value = formattedDate;
     }
     else {
-        window.location.href = "../";
+        window.location.href = "login.html";
     }
 }
 
@@ -29,20 +39,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
-
-
-//Funcion para que se muestre el dia DE HOY
-window.onload = function () {
-    const diaDeHOy = document.getElementById('diaDeHoy');
-    const currentDate = new Date();
-
-    const year = currentDate.getFullYear();
-    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-    const day = currentDate.getDate().toString().padStart(2, '0');
-
-    const formattedDate = `${year}-${month}-${day}`;
-    diaDeHOy.value = formattedDate;
-}
 
 
 
