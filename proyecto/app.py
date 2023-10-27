@@ -165,7 +165,7 @@ def listar_servicios(userID):
 
 
 
-
+#POST PRODUCT 
 @app.route('/users/<int:userID>/products', methods=['POST'])
 @token_required
 def create_product(userID):
@@ -253,6 +253,45 @@ def update_product(userID, id):
         return jsonify({"message": "Producto actualizado exitosamente"}), 200
     
 
+#UPDATE STOCK 
+@app.route('/products/update/stock', methods=['PUT'])
+@token_required
+def update_products():
+    cur = mysql.connection.cursor()
+    data = request.json.get('products')
+
+    if not data:
+        return jsonify({'message': 'Datos de productos no proporcionados'}), 400
+
+
+    for product_data in data:
+        product_id = product_data['id']
+
+        # Actualiza los campos del producto con los valores proporcionados
+        cur.execute(
+            """
+            UPDATE Products
+            SET
+                name = %s,
+                description = %s,
+                price = %s,
+                stock = %s,
+                userID = %s
+            WHERE
+                id = %s
+            """,
+            (
+                product_data['name'],
+                product_data['description'],
+                product_data['price'],
+                product_data['stock'],
+                product_data['userID'],
+                product_id
+            )
+        )
+        mysql.connection.commit()
+        return jsonify({"message": "Stock actualizado correctamente"}), 200
+
 
 #UPDATE SERVICE
 #SE MODIFICO PARA QUE SEA POR ID Y SE PUEDAN UPDATEAR TODOS LOS CAMPOS QUE SE QUIERAN
@@ -329,31 +368,6 @@ def delete_product(userID, id):
         return jsonify({"message": "Producto eliminado exitosamente"}), 200
 
 
-####DELETE SERVICE
-@app.route('/users/<int:userID>/services/<int:id>', methods=['DELETE'])
-@token_required
-def delete_service(userID, id):
-    if request.method == 'DELETE':
-        # Verificar si el producto a eliminar existe
-        cur = mysql.connection.cursor()
-        cur.execute('SELECT * FROM Services WHERE userID = %s AND id = %s', (userID, id))
-        existing_service = cur.fetchone()
-        cur.close()
-
-        if not existing_service:
-            return jsonify({"message": "El servicio no existe o no pertenece a este usuario"}), 404
-
-        # Eliminar el producto de la tabla 'Products' basado en el nombre y el ID del usuario
-        cur = mysql.connection.cursor()
-        cur.execute('DELETE FROM Services WHERE userID = %s AND id = %s', (userID, id))
-        mysql.connection.commit()
-        cur.close()
-
-        return jsonify({"message": "Servicio eliminado exitosamente"}), 200
-
-
-
-#VER COMENTARIOS DENTRO DE LA FUNCION
 ## GET clients BY ID USER
 @app.route('/users/<int:userID>/clients', methods=['GET'])
 @token_required
@@ -374,6 +388,40 @@ def listar_clientes(userID):
         return jsonify(clientes)
         
 
+#POST CLIENT
+@app.route('/users/<int:userID>/clients', methods=['POST'])
+@token_required
+def create_client(userID):
+    if request.method == 'POST':
+        # Obtener los datos del JSON del request
+        name = request.get_json()['name']
+        lastName = request.get_json()['lastName']
+        address = request.get_json()['address']
+        dni = request.get_json()['dni']
+        cuit = request.get_json()['cuit']
+        email = request.get_json()['email']
+
+        # Validar que los datos necesarios estén presentes
+        if not name or not lastName or address is None or dni is None or cuit is None or email is None:
+            return jsonify({"message": "Faltan datos requeridos"}), 400
+
+        # Verificar si un cliente con el mismo dni ya existe
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT * FROM Clients WHERE userID = %s AND email = %s', (userID, email))
+        existing_client = cur.fetchone()
+        cur.close()
+
+        if existing_client:
+            return jsonify({"message": "El cliente con el mismo email ya existe para este usuario"}), 400
+
+        # Crear una nueva entrada en la tabla 'Clients' con el userID de la URL
+        cur = mysql.connection.cursor()
+        cur.execute('INSERT INTO Clients (name, lastName, address, dni, cuit, email, userID) VALUES (%s, %s, %s, %s, %s, %s, %s)',
+                    (name, lastName, address, dni, cuit, email, userID))
+        mysql.connection.commit()
+        cur.close()
+
+        return jsonify({"message": "Cliente creado exitosamente"}), 201
 
 
 #UPDATE SERVICE
@@ -464,7 +512,38 @@ def delete_client(userID, id):
         cur.close()
 
         return jsonify({"message": "Cliente eliminado exitosamente"}), 200
+    
+    
+### METODOS PARA FACTURAS ###
+@app.route('/bills', methods=['POST'])
+@token_required
+def agregar_factura():
+    try:
+        # Obtén los datos de la solicitud POST en formato JSON
+        data = request.get_json()
 
+        # Extrae los campos necesarios de los datos
+        date = data['date']
+        price = data['price']
+        userID = data['userID']
+        clientID = data['clientID']
+
+        # Crea una nueva factura en la base de datos
+        cur = mysql.connection.cursor()
+        cur.execute("INSERT INTO Bills (date, price, userID, clientID) VALUES (%s, %s, %s, %s)", (date, price, userID, clientID))
+        mysql.connection.commit()
+        cur.close()
+
+        # Devuelve una respuesta de éxito
+        response = jsonify({'message': 'Factura agregada con éxito'})
+        response.status_code = 201  # Código HTTP 201 (Created)
+        return response
+
+    except Exception as e:
+        # Si ocurre un error, devuelve un mensaje de error y un código HTTP 500 (Internal Server Error)
+        response = jsonify({'error': str(e)})
+        response.status_code = 500
+        return response
 
 
 if __name__ == '__main__':
