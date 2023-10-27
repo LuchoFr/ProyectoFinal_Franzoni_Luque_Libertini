@@ -16,7 +16,7 @@ class Client:
         return{
             "id": self._id,
             "name": self._name,
-            "surname": self._lastName,
+            "lastName": self._lastName,
             "address": self._address,
             "dni" : self._dni,
             "cuit" :self._cuit,

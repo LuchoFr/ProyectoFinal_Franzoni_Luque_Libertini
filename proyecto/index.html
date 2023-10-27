@@ -20,7 +20,7 @@
                 </div>
             </div>
             <div class="sidebar">
-                <a href="#" class="active">
+                <a href="#" onclick="cargarClientes()" class="active">
                     <span class="material-icons-sharp">perm_identity</span>
                     <h3> Clientes</h3>
                 </a>
@@ -28,7 +28,7 @@
                     <span class="material-icons-sharp">inventory</span>
                     <h3> Productos </h3>
                 </a>
-                <a href="#">
+                <a href="#" onclick="cargarServicios()">
                     <span class="material-icons-sharp">grid_view</span>
                     <h3> Servicios</h3>
                 </a>
@@ -60,15 +60,15 @@
                     <span class="material-icons-sharp">settings</span>
                     <h3> Configuracion </h3>
                 </a> -->
-                <a href="/agregar_producto">
+                <a href="#" onclick="agregarProducto()">
                     <span class="material-icons-sharp">add_circle</span>
                     <h3> Agregar Producto </h3>
                 </a>
-                <a href="#">
+                <a href="#" onclick="agregarServicio()">
                     <span class="material-icons-sharp">add_circle_outline</span>
                     <h3> Agregar Servicio </h3>
                 </a>
-                <a href="#">
+                <a href="#" onclick="logout()">
                     <span class="material-icons-sharp">logout</span>
                     <h3> Log out </h3>
                 </a>
@@ -78,7 +78,7 @@
         <main>
             <h1> Bienvenido a su Dashboard <span id="usernameBienvenida"> </span> </h1>
             <div class="date">
-                <input type="date">
+                <input type="date" id="diaDeHoy">
             </div>
             <!--NAVIGATION-->
             <div class="contenido-principal">

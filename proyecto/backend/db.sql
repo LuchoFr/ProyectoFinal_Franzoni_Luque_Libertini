@@ -51,24 +51,17 @@ CREATE TABLE IF NOT EXISTS Bills(
     FOREIGN KEY (clientID) REFERENCES Clients(id)
 );
 
-CREATE TABLE IF NOT EXISTS BillDetailsProducts (
+CREATE TABLE IF NOT EXISTS BillDetails(
     id INT AUTO_INCREMENT PRIMARY KEY,
     billID INT,
     productID INT,
-    quantity INT,
-    amount DECIMAL(10,2),
-    FOREIGN KEY (billID) REFERENCES Bills(id),
-    FOREIGN KEY (productID) REFERENCES Products(id)
-);
-
-CREATE TABLE IF NOT EXISTS BillDetailsServices(
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    billID INT,
     serviceID INT,
-    amount DECIMAL(10,2),
+    productQuantity INT,
     FOREIGN KEY (billID) REFERENCES Bills(id),
+    FOREIGN KEY (productID) REFERENCES Products(id),
     FOREIGN KEY (serviceID) REFERENCES Services(id)
 );
+
 
 
 /* QUERIES USERS */
@@ -95,6 +88,8 @@ VALUES
     ('Monitor Curvo', 'Monitor de 27 pulgadas con diseño curvo', 299.99, 10, 3),
     ('Altavoz Bluetooth', 'Altavoz portátil con conexión Bluetooth', 29.99, 75, 1);
 
+
+/* QUERIES SERVICES */
 INSERT INTO Services (name, description, price, userID)
 VALUES
     ('Mantenimiento de Redes Empresariales', 'Servicio de mantenimiento y optimización de redes corporativas', 80.00, 1),
@@ -106,6 +101,7 @@ VALUES
     ('Optimización de Sistemas', 'Mejora del rendimiento y optimización de sistemas informáticos', 75.00, 1),
     ('Servicio de Consultoría en Ciberseguridad', 'Consultoría y auditoría en ciberseguridad', 110.00, 2);
 
+/*QUERIES CLIENTES*/
 INSERT INTO Clients (name, lastName, address, dni, cuit, email, userID)
 VALUES
     ('Juan', 'Pérez', '123 Calle Principal', '12345678', '20345678901', 'juan@email.com', 1),

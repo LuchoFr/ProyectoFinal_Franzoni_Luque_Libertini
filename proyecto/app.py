@@ -120,33 +120,6 @@ def loggin():
     return jsonify({"token": token, "username": auth.username, "id": row[0]})
 
 
-'''
-@app.route('/productos', methods=['GET'])
-@token_required
-@user_resources
-def listar_productos():
-    try:
-        cur = mysql.connection.cursor()
-        cur.execute('SELECT * FROM Products')
-         #almacenamos una lista de productos
-        data = cur.fetchall()
-        #creo una lista para almacenar los productos q aextraigo de la BD
-        productos = []
-        for fila in data:
-            producto= {'id':fila[0],
-                       'nombre':fila[1],
-                       'descripcion':fila[2],
-                       'precio':fila[3],
-                       'stock':fila[4]}
-            productos.append(producto)
-        return jsonify({"productos": productos, 'mensaje':'Productos Listados'})
-        
-    except Exception as ex:
-        return jsonify({'mensaje':'Error'})
-
-'''
-    
-
 
 #VER COMENTARIOS DENTRO DE LA FUNCION
 ## GET PRODUCTOS BY USERID
@@ -167,6 +140,30 @@ def listar_productos(userID):
             productos.append(objProducto.to_json())
 
         return jsonify(productos)
+
+
+
+#VER COMENTARIOS DENTRO DE LA FUNCION
+## GET services BY ID USER
+@app.route('/users/<int:userID>/services', methods=['GET'])
+@token_required
+#@user_resources
+def listar_servicios(userID):
+    #try:
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT * FROM services WHERE userID = {0}'.format(userID))
+         #almacenamos una lista de servicios
+        data = cur.fetchall()
+        print(data)
+        #creo una lista para almacenar los servicios q extraigo de la BD
+        servicios = []
+        for fila in data: #Objeto servicio
+            objServicio = Service(fila)
+            servicios.append(objServicio.to_json())
+
+        return jsonify(servicios)
+
+
 
 
 @app.route('/users/<int:userID>/products', methods=['POST'])
@@ -201,46 +198,122 @@ def create_product(userID):
 
         return jsonify({"message": "Producto creado exitosamente"}), 201
 
-@app.route('/users/<int:userID>/products/<string:product_name>', methods=['PUT'])
-@token_required
-def update_product(userID, product_name):
-    if request.method == 'PUT':
-        # Obtener los datos del JSON del request
-        new_name = request.get_json()['name']
-        description = request.get_json()['description']
-        price = request.get_json()['price']
-        stock = request.get_json()['stock']
 
-        # Validar que los datos necesarios estén presentes
-        if not new_name or not description or price is None or stock is None:
-            return jsonify({"message": "Faltan datos requeridos"}), 400
+
+#SE MODIFICO PARA QUE SEA POR ID Y SE PUEDAN UPDATEAR TODOS LOS CAMPOS QUE SE QUIERAN
+@app.route('/users/<int:userID>/products/<int:id>', methods=['PUT'])
+@token_required
+def update_product(userID, id):
+    if request.method == 'PUT':
+
+        # se obtienen los datos del JSON del request, si no esta se establece NONE
+        name = request.get_json().get('name', None)
+        description = request.get_json().get('description', None)
+        price = request.get_json().get('price', None)
+        stock = request.get_json().get('stock', None)
+
+        # Validar que al menos uno de los campos a actualizar esté presente
+        if not name and not description and price is None and stock is None:
+            return jsonify({"message": "No se proporcionaron datos para actualizar"}), 400
 
         # Verificar si el producto a actualizar existe
         cur = mysql.connection.cursor()
-        cur.execute('SELECT * FROM Products WHERE userID = %s AND name = %s', (userID, product_name))
+        cur.execute('SELECT * FROM Products WHERE userID = %s AND id = %s', (userID, id))
+
+        #nos quedamos con uno
         existing_product = cur.fetchone()
-        cur.close()
 
         if not existing_product:
+            cur.close()
             return jsonify({"message": "El producto no existe o no pertenece a este usuario"}), 404
 
-        # Actualizar el producto en la tabla 'Products' basado en el nombre y el ID del usuario
-        cur = mysql.connection.cursor()
-        cur.execute('UPDATE Products SET name = %s, description = %s, price = %s, stock = %s WHERE userID = %s AND name = %s',
-                    (new_name, description, price, stock, userID, product_name))
+        # diccionario con los campos apra actualizar
+        updated_product = {}
+        if name is not None:
+            updated_product['name'] = name
+        if description is not None:
+            updated_product['description'] = description
+        if price is not None:
+            updated_product['price'] = price
+        if stock is not None:
+            updated_product['stock'] = stock
+
+        # se actualiza el producto en la tabla 'Products' basado en el USERID y el ID DEL PRODUCTO
+        cur.execute('UPDATE Products SET name = %s, description = %s, price = %s, stock = %s WHERE userID = %s AND id = %s',
+                    (updated_product.get('name', existing_product[1]),
+                     updated_product.get('description', existing_product[2]),
+                     updated_product.get('price', existing_product[3]),
+                     updated_product.get('stock', existing_product[4]),
+                     userID,
+                     id))
+        
         mysql.connection.commit()
         cur.close()
 
         return jsonify({"message": "Producto actualizado exitosamente"}), 200
     
-    
-@app.route('/users/<int:userID>/products/<string:product_name>', methods=['DELETE'])
+
+
+#UPDATE SERVICE
+#SE MODIFICO PARA QUE SEA POR ID Y SE PUEDAN UPDATEAR TODOS LOS CAMPOS QUE SE QUIERAN
+@app.route('/users/<int:userID>/services/<int:id>', methods=['PUT'])
 @token_required
-def delete_product(userID, product_name):
+def update_service(userID, id):
+    if request.method == 'PUT':
+
+        # se obtienen los datos del JSON del request, si no esta se establece NONE
+        name = request.get_json().get('name', None)
+        description = request.get_json().get('description', None)
+        price = request.get_json().get('price', None)
+
+        # Validar que al menos uno de los campos a actualizar esté presente
+        if not name and not description and price is None:
+            return jsonify({"message": "No se proporcionaron datos para actualizar"}), 400
+
+        # Verificar si el producto a actualizar existe
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT * FROM Services WHERE userID = %s AND id = %s', (userID, id))
+
+        #nos quedamos con uno
+        existing_service = cur.fetchone()
+
+        if not existing_service:
+            cur.close()
+            return jsonify({"message": "El servicio no existe o no pertenece a este usuario"}), 404
+
+        # diccionario con los campos para actualizar
+        updated_service = {}
+        if name is not None:
+            updated_service['name'] = name
+        if description is not None:
+            updated_service['description'] = description
+        if price is not None:
+            updated_service['price'] = price
+
+
+        # se actualiza el producto en la tabla 'Services' basado en el USERID y el ID DEL SERVICIO
+        cur.execute('UPDATE Services SET name = %s, description = %s, price = %s WHERE userID = %s AND id = %s',
+                    (updated_service.get('name', existing_service[1]),
+                     updated_service.get('description', existing_service[2]),
+                     updated_service.get('price', existing_service[3]),
+                     userID,
+                     id))
+        
+        mysql.connection.commit()
+        cur.close()
+
+        return jsonify({"message": "Servicio actualizado exitosamente"}), 200
+
+
+
+####DELETE PRODUCT
+@app.route('/users/<int:userID>/products/<int:id>', methods=['DELETE'])
+@token_required
+def delete_product(userID, id):
     if request.method == 'DELETE':
         # Verificar si el producto a eliminar existe
         cur = mysql.connection.cursor()
-        cur.execute('SELECT * FROM Products WHERE userID = %s AND name = %s', (userID, product_name))
+        cur.execute('SELECT * FROM Products WHERE userID = %s AND id = %s', (userID, id))
         existing_product = cur.fetchone()
         cur.close()
 
@@ -249,31 +322,36 @@ def delete_product(userID, product_name):
 
         # Eliminar el producto de la tabla 'Products' basado en el nombre y el ID del usuario
         cur = mysql.connection.cursor()
-        cur.execute('DELETE FROM Products WHERE userID = %s AND name = %s', (userID, product_name))
+        cur.execute('DELETE FROM Products WHERE userID = %s AND id = %s', (userID, id))
         mysql.connection.commit()
         cur.close()
 
         return jsonify({"message": "Producto eliminado exitosamente"}), 200
 
-#VER COMENTARIOS DENTRO DE LA FUNCION
-## GET services BY ID USER
-@app.route('/users/<int:userID>/services', methods=['GET'])
-@token_required
-#@user_resources
-def listar_servicios(userID):
-    #try:
-        cur = mysql.connection.cursor()
-        cur.execute('SELECT * FROM services WHERE userID = {0}'.format(userID))
-         #almacenamos una lista de servicios
-        data = cur.fetchall()
-        print(data)
-        #creo una lista para almacenar los servicios q extraigo de la BD
-        servicios = []
-        for fila in data: #Objeto servicio
-            objServicio = Service(fila)
-            servicios.append(objServicio.to_json())
 
-        return jsonify(servicios)
+####DELETE SERVICE
+@app.route('/users/<int:userID>/services/<int:id>', methods=['DELETE'])
+@token_required
+def delete_service(userID, id):
+    if request.method == 'DELETE':
+        # Verificar si el producto a eliminar existe
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT * FROM Services WHERE userID = %s AND id = %s', (userID, id))
+        existing_service = cur.fetchone()
+        cur.close()
+
+        if not existing_service:
+            return jsonify({"message": "El servicio no existe o no pertenece a este usuario"}), 404
+
+        # Eliminar el producto de la tabla 'Products' basado en el nombre y el ID del usuario
+        cur = mysql.connection.cursor()
+        cur.execute('DELETE FROM Services WHERE userID = %s AND id = %s', (userID, id))
+        mysql.connection.commit()
+        cur.close()
+
+        return jsonify({"message": "Servicio eliminado exitosamente"}), 200
+
+
 
 #VER COMENTARIOS DENTRO DE LA FUNCION
 ## GET clients BY ID USER
@@ -295,16 +373,97 @@ def listar_clientes(userID):
 
         return jsonify(clientes)
         
-    #except Exception as ex:
-    #    return jsonify({'mensaje':'Error'})
-    
 
 
 
+#UPDATE SERVICE
+#SE MODIFICO PARA QUE SEA POR ID Y SE PUEDAN UPDATEAR TODOS LOS CAMPOS QUE SE QUIERAN
+@app.route('/users/<int:userID>/clients/<int:id>', methods=['PUT'])
+@token_required
+def update_client(userID, id):
+    if request.method == 'PUT':
+
+        # se obtienen los datos del JSON del request, si no esta se establece NONE
+        name = request.get_json().get('name', None)
+        lastName = request.get_json().get('lastName', None)
+        address = request.get_json().get('address', None)
+        dni = request.get_json().get('dni', None)
+        cuit = request.get_json().get('cuit', None)
+        email = request.get_json().get('email', None)
+        
+
+        # Validar que al menos uno de los campos a actualizar esté presente
+        if not name and not lastName and not address and not dni and not cuit and not email:
+            return jsonify({"message": "No se proporcionaron datos para actualizar"}), 400
+
+
+        # Verificar si el producto a actualizar existe
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT * FROM Clients WHERE userID = %s AND id = %s', (userID, id))
+
+        #nos quedamos con uno
+        existing_client = cur.fetchone()
+
+        if not existing_client:
+            cur.close()
+            return jsonify({"message": "El cliente no existe o no pertenece a este usuario"}), 404
+
+        # diccionario con los campos para actualizar
+        updated_client = {}
+        if name is not None:
+            updated_client['name'] = name
+        if lastName is not None:
+            updated_client['lastName'] = lastName
+        if address is not None:
+            updated_client['address'] = address
+        if dni is not None:
+            updated_client['dni'] = dni
+        if cuit is not None:
+            updated_client['cuit'] = cuit
+        if email is not None:
+            updated_client['price'] = email
+
+
+        # se actualiza el producto en la tabla 'Clients' basado en el USERID y el ID DEL CLIENTE
+        cur.execute('UPDATE Clients SET name = %s, lastName = %s, address = %s, dni = %s, cuit = %s, email = %s WHERE userID = %s AND id = %s',
+            (updated_client.get('name', existing_client[1]),
+             updated_client.get('lastName', existing_client[2]),
+             updated_client.get('address', existing_client[3]),
+             updated_client.get('dni', existing_client[4]),
+             updated_client.get('cuit', existing_client[5]),
+             updated_client.get('email', existing_client[6]),
+             userID,
+             id))
+
+        
+        mysql.connection.commit()
+        cur.close()
+
+        return jsonify({"message": "Cliente actualizado exitosamente"}), 200
 
 
 
+####DELETE CLIENT
+@app.route('/users/<int:userID>/clients/<int:id>', methods=['DELETE'])
+@token_required
+def delete_client(userID, id):
+    if request.method == 'DELETE':
+        # Verificar si el cliente a eliminar existe
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT * FROM Clients WHERE userID = %s AND id = %s', (userID, id))
+        existing_client = cur.fetchone()
+        cur.close()
 
+        if not existing_client:
+            return jsonify({"message": "El cliente no existe o no pertenece a este usuario"}), 404
+
+        # Eliminar el producto de la tabla 'Products' basado en el nombre y el ID del usuario
+        cur = mysql.connection.cursor()
+        cur.execute('DELETE FROM Clients WHERE userID = %s AND id = %s', (userID, id))
+        mysql.connection.commit()
+        cur.close()
+
+        return jsonify({"message": "Cliente eliminado exitosamente"}), 200
 
 
 

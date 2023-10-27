@@ -53,7 +53,9 @@ body{
     width: 96%;
     margin: 0 auto;
     gap: 1.8rem;
-    grid-template-columns: 14rem auto 23rem;
+    /* grid-template-columns: 14rem auto 23rem; PARA QUE SEAN 3 COLUMNAS */ 
+    grid-template-columns: 14rem 1fr; /*PARA QUE SEAN 2 columnas aside izqueirda, y main ocupa lo restante*/
+
 }
 
 a{
