@@ -17,7 +17,7 @@ class Product:
             "id":self._id,
             "name": self._name,
             "description": self._description,
-            "price": self._price,
+            "price": float(self._price),
             "stock" : self._stock,
             "userID" : self._userID
         }    

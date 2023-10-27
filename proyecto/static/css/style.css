@@ -331,4 +331,124 @@ main .contenido-principal a{
 
 
 
+/* Estilo para un botón de peligro (color de fondo rojo) */
+
+.botonesFactura {
+    display: flex;
+    justify-content: flex-end; /* Coloca los botones en el extremo derecho */
+    margin-top: 20px; /* Espacio entre la tabla y los botones */
+}
+
+#agregarProducto{
+    margin-right: 5px;
+    margin-left: 5px;
+}
+
+/* Estilos para el formulario de producto */
+#productoForm {
+    margin-top: 30px;
+    background-color: var(--color-white);
+    border-radius: var(--card-border-radius);
+    padding: var(--card-padding);
+    box-shadow: var(--box-shadow);
+    transition: all 200ms ease;
+    width: 100%;
+    text-align: center;
+}
+
+#productoForm:hover {
+    box-shadow: none;
+}
+
+#productoForm select,
+#productoForm input[type="text"],
+#productoForm input[type="number"] {
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 0.8rem;
+    border: 1px solid var(--color-light);
+    border-radius: var(--border-radius-1);
+    background-color: var(--color-info-light);
+    color: var(--color-dark);
+}
+
+#productoForm button {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    border: none;
+    border-radius: var(--border-radius-1);
+    padding: 0.8rem 1.6rem;
+    cursor: pointer;
+}
+
+#productoForm button:hover {
+    background-color: var(--color-primary-variant);
+}
+
+/* Estilo para el campo de solo lectura */
+#productoForm input[readonly] {
+    background-color: var(--color-light);
+    color: var(--color-info-dark);
+}
+
+
+/* Estilo para el menú desplegable de cliente */
+select[name="Clientes"] {
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 0.8rem;
+    border: 1px solid var(--color-light);
+    border-radius: var(--border-radius-1);
+    background-color: var(--color-info-light);
+    color: var(--color-dark);
+}
+
+
+
+/* Estilos para el formulario de servicio */
+#servicioForm {
+    margin-top: 30px;
+    background-color: var(--color-white);
+    border-radius: var(--card-border-radius);
+    padding: var(--card-padding);
+    box-shadow: var(--box-shadow);
+    transition: all 200ms ease;
+    width: 100%;
+    text-align: center;
+}
+
+#servicioForm:hover {
+    box-shadow: none;
+}
+
+#servicioForm select,
+#servicioForm input[type="text"] {
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 0.8rem;
+    border: 1px solid var(--color-light);
+    border-radius: var(--border-radius-1);
+    background-color: var(--color-info-light);
+    color: var(--color-dark);
+}
+
+#servicioForm button {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    border: none;
+    border-radius: var(--border-radius-1);
+    padding: 0.8rem 1.6rem;
+    cursor: pointer;
+}
+
+#servicioForm button:hover {
+    background-color: var(--color-primary-variant);
+}
+
+/* Estilo para el campo de solo lectura */
+#servicioForm input[readonly] {
+    background-color: var(--color-light);
+    color: var(--color-info-dark);
+}
+
 
