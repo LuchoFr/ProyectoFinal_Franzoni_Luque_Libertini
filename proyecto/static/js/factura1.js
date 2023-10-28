@@ -1,4 +1,4 @@
-let contenidoPrincipal 
+
 let formulario
 let formularioProd
 let clienteCargado = false
@@ -233,11 +233,7 @@ function mostrarFactura(clienteSeleccionado) {
             asignarEventoClick(agregarProductoButton);
             
 
-
-
         }
-
-
 
     }
 }

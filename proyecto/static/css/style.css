@@ -269,6 +269,7 @@ main .contenido-principal table{
     text-align: center;
     box-shadow: var(--box-shadow);
     transition: all 200ms ease;
+    margin-top: 10px;
 }
 
 main .contenido-principal table:hover{
@@ -450,5 +451,4 @@ select[name="Clientes"] {
     background-color: var(--color-light);
     color: var(--color-info-dark);
 }
-
 

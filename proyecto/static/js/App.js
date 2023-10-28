@@ -1,19 +1,22 @@
+//seleccionamos div del main principal
+var contenidoPrincipal = document.querySelector('.contenido-principal');
+
 
 window.onload = function () {
     const token = localStorage.getItem("token");
     if (token) {
+        //TOMAMOS EL USERNAME PARA EL SALUDO
         const username = localStorage.getItem("username");
-        console.log(username)
         const usernameBienvenida = document.getElementById("usernameBienvenida")
-
         usernameBienvenida.textContent = username;
         const diaDeHOy = document.getElementById('diaDeHoy');
         const currentDate = new Date();
-    
+
+        //TOMAMOS EL DIA DE HOY
         const year = currentDate.getFullYear();
         const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
         const day = currentDate.getDate().toString().padStart(2, '0');
-    
+
         const formattedDate = `${year}-${month}-${day}`;
         diaDeHOy.value = formattedDate;
     }
@@ -50,8 +53,6 @@ var token = localStorage.getItem('token');
 /////////////////////////////////////////////////PRODUCTOS////////////////////////////////////////////
 // Coloca aquí el código Fetch para obtener y agregar productos
 function cargarProductos() {
-    const userID = localStorage.getItem('id');
-    const token = localStorage.getItem('token');
 
     //recuperar credenciales para validar el acceso
     const requestOptions = {
@@ -146,7 +147,6 @@ function cargarProductos() {
         })
 
 }
-
 
 
 //FUNCION EDITAR
@@ -277,8 +277,6 @@ function eliminar(id, userID) {
 /////////////////////////////////////////////////SERVICIOS////////////////////////////////////////////
 // Coloca aquí el código Fetch para obtener y agregar productos
 function cargarServicios() {
-    const userID = localStorage.getItem('id');
-    const token = localStorage.getItem('token');
 
     //recuperar credenciales para validar el acceso
     const requestOptions = {
@@ -430,7 +428,7 @@ function guardarCambiosServicio(id, userID) {
         name: camposEditables[1].textContent, // La segunda columna es el nombre
         description: camposEditables[2].textContent, // La tercera columna es la descripción
         price: parseFloat(camposEditables[3].textContent), // La cuarta columna es el precio
-        
+
     };
 
     // Realizar una solicitud PUT para enviar los datos actualizados al servidor
@@ -498,6 +496,11 @@ function eliminarServicio(id, userID) {
 
 
 /////////////////////////////////////////////////CLIENTES////////////////////////////////////////////
+
+// Variable de estado para controlar si el formulario está visible
+let formularioVisible = true;
+
+
 // Coloca aquí el código Fetch para obtener y agregar productos
 function cargarClientes() {
     const userID = localStorage.getItem('id');
@@ -513,8 +516,7 @@ function cargarClientes() {
         }
     }
 
-    //seleccionamos div del main principal
-    const contenidoPrincipal = document.querySelector('.contenido-principal');
+    
     contenidoPrincipal.innerHTML = '';
 
     // Actualizar el título h2 creando el elemento 
@@ -540,7 +542,6 @@ function cargarClientes() {
             const table = document.createElement('table');
             table.id = "table-products";
             table.className = "table-products";
-
 
             //creacion de encabezado (thead)
             const thead = document.createElement("thead");
@@ -598,8 +599,119 @@ function cargarClientes() {
 
         })
 
+
+
+        //FUNCION PARA AGREGAR BOTON DE AGREGAR CLIENTE Y FORMULARIO
+        // Boton "Agregar Cliente" 
+        const addButton = document.createElement('button');
+        addButton.textContent = 'Agregar Cliente';
+        addButton.className = 'rounded-button';
+        addButton.addEventListener('click', () => {
+            if (formularioVisible) {
+                
+                mostrarFormulario();
+            }
+        });
+
+        // Crea un div para los botones
+        const divBotones = document.createElement("div");
+        divBotones.classList.add("facturaContainer");
+
+
+        // Agrego el botón al "contenido-principal"
+        divBotones.appendChild(addButton);
+        contenidoPrincipal.appendChild(divBotones);
+
+    
 }
 
+
+function mostrarFormulario() {
+    // Creo formulario
+    const formularioCliente = document.createElement('form');
+    formularioCliente.id = 'servicioForm';
+
+    formularioCliente.innerHTML = `
+        <input type="text" id="nombre" placeholder="Nombre" required>
+        <input type="text" id="apellido" placeholder="Apellido" required>
+        <input type="text" id="direccion" placeholder="Dirección" required>
+        <input type="text" id="dni" placeholder="DNI" required>
+        <input type="text" id="cuit" placeholder="CUIT" required>
+        <input type="text" id="email" placeholder="Email" required>
+        <button type="button" onclick="guardarCliente()" class='small-button rounded-button add-button'> Guardar </button>
+        <button type="button" onclick="cancelarCliente()" class='small-button rounded-button cancel-button'> Cancelar </button>
+        `;
+
+    //agrego el formulario
+    contenidoPrincipal.appendChild(formularioCliente);
+    
+}
+
+
+function cancelarCliente() {
+    // Elimina el formulario
+    const formulario = document.getElementById('servicioForm');
+    if (formularioVisible) { // Revisar si el formulario está visible, no es necesario invertir la condición
+         // Elimina el formulario
+        formularioVisible = true; // Actualiza el estado para indicar que el formulario no está visible
+        formulario.remove();
+    }
+
+}
+
+
+//FUNCION GUARDAR CLIENTE
+function guardarCliente() {
+    const nombre = document.getElementById('nombre').value;
+    const apellido = document.getElementById('apellido').value;
+    const direccion = document.getElementById('direccion').value;
+    const dni = document.getElementById('dni').value;
+    const cuit = document.getElementById('cuit').value;
+    const email = document.getElementById('email').value;
+
+    // Crear un objeto con los datos del cliente
+    const nuevoCliente = {
+        name: nombre,
+        lastName: apellido,
+        address: direccion,
+        dni: dni,
+        cuit: cuit,
+        email: email
+    };
+
+
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-access-token': token,
+            'user-id': userID
+        },
+        body: JSON.stringify(nuevoCliente)  // Convierte el objeto a JSON
+    };
+
+
+    fetch(`http://127.0.0.1:4500/users/${userID}/clients`, requestOptions)
+        .then(response => response.json())
+        .then(data => {
+            // Manejar la respuesta del servidor
+            //console.log(data);
+            // Si la respuesta es igual al mensaje del back, mensaje de éxito 
+            if (data.message === "Cliente creado exitosamente") {
+                alert("Cliente agregado con éxito");
+                cargarClientes();
+                formulario.remove()
+                
+            } else {
+                alert("No se pudo crear el cliente");
+                // Maneja otros casos aquí si es necesario
+            }
+        })
+        .catch(error => {
+            // Manejar errores de la solicitud al servidor
+            console.error(error);
+        });
+}
 
 
 //FUNCION EDITAR
@@ -657,9 +769,9 @@ function guardarCambiosCliente(id, userID) {
 
     // Objeto que contiene los datos a enviar al servidor
     const datosActualizados = {
-        name: camposEditables[1].textContent, 
-        lastName: camposEditables[2].textContent, 
-        address: parseFloat(camposEditables[3].textContent), 
+        name: camposEditables[1].textContent,
+        lastName: camposEditables[2].textContent,
+        address: parseFloat(camposEditables[3].textContent),
         dni: parseInt(camposEditables[4].textContent),
         cuit: parseInt(camposEditables[5].textContent),
         email: camposEditables[6].textContent,
