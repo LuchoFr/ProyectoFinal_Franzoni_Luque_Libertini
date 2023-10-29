@@ -325,7 +325,7 @@ def update_products():
             )
         )
         mysql.connection.commit()
-        return jsonify({"message": "Stock actualizado correctamente"}), 200
+    return jsonify({"message": "Stock actualizado correctamente"}), 200
 
 
 #UPDATE SERVICE

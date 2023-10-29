@@ -11,6 +11,7 @@ let seAgregoProducto = false;
 const productosDict = {};
 const clientsDict = {};
 const serviciosDict = {};
+let prodServVendidos = {};
 
 //Elementos para cargar en la factura gobales
 let clienteSeleccionado
@@ -78,7 +79,7 @@ const solicitarDatosFactura = async () => {
 
         seAgregoElemento = false
         seAgregoProducto = false
-
+        prodServVendidos = {}; //lo actualizo por si sale de la factura y se pone en 0
         mostrarClientes()
         
 
@@ -88,7 +89,7 @@ const solicitarDatosFactura = async () => {
 };
 
 function mostrarClientes() {
-    
+        totalFactura = 0
         contenidoPrincipal = document.querySelector(".contenido-principal");
         //borrar contenido
         contenidoPrincipal.innerHTML = '';
@@ -372,6 +373,22 @@ function CargarFormulario() {
 
             // Actualiza el stock en el diccionario del producto
             productosDict[productoSeleccionado].stock = stock;
+
+            //Actualizo la lista de productos y servicios de esa boleta
+
+            const productID = productosDict[productoSeleccionado].id;
+
+            if (!prodServVendidos[`Prod${productID}`]) {
+                // Si el producto no existe en prodServVendidos, 
+                prodServVendidos[`Prod${productID}`] = { productID, productQuantity: cantidad };
+            } else {
+                // Si el producto ya existe, se actualiza la cantidad de stock
+                prodServVendidos[`Prod${productID}`].productQuantity += cantidad;
+            }
+            
+
+            console.log(prodServVendidos)
+
             // Calcula el total
             const total = precio * cantidad;
 
@@ -501,6 +518,10 @@ function agregarServicio() {
             // Calcula el total del servicio (siempre con cantidad 1)
             const total = precio * 1;
 
+            // Agrego al diccionario De servicios y productos para despues enviar
+            const servicioID = serviciosDict[servicioSeleccionado].id;
+            prodServVendidos[`Serv:${servicioID}`] = { serviceID : servicioID };
+        
             // Crea una nueva fila de tabla para el servicio
             const newRow = document.createElement("tr");
 
@@ -567,7 +588,9 @@ function cargarBoleta() {
 
 
 
+
     if(seAgregoProducto=true){
+        console.log(JSON.stringify(productoListoEnv))
         const requestOptionsStock = {
             method: 'PUT',
             headers: {
@@ -603,9 +626,51 @@ function cargarBoleta() {
         .then(response => response.json())
         .then(data => {
             if (data.message === "Factura agregada con éxito") {
-                alert("Factura agregada con éxito");
-                formulario.remove();
-                solicitarDatosFactura();
+                const requestOptionsUltFactura = {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-access-token': token,
+                        'user-id': userID
+                    }
+                };
+                            
+                fetch(`http://127.0.0.1:4500/bills/${userID}/ultima`, requestOptionsUltFactura)
+                .then(respuestabill => respuestabill.json())
+                .then(infoBill => {
+                    //recorro mi diccionario de productos agregados a la factura para darle el numero id de la factura 
+                    for (const prodOrServ in prodServVendidos) {
+                        prodServVendidos[prodOrServ]["billID"] = infoBill.id
+                    }
+                    const contenidoFact = Object.values(prodServVendidos)
+                    const billDetailsJSON = JSON.stringify(contenidoFact)
+                    console.log(billDetailsJSON)
+                    const requestOptionsCargaAux = {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-access-token': token,
+                            'user-id': userID
+                        },
+                        body: billDetailsJSON
+                    };
+                    fetch(`http://127.0.0.1:4500/billdetails`, requestOptionsCargaAux)
+                    .then(respuestaCarga => respuestaCarga.json())
+                    .then(infoResp => {
+                        if (infoResp.message === "Detalles de factura creados exitosamente") {
+                            alert("Se ha creado correctamente la factura!")
+                            formulario.remove();
+                            solicitarDatosFactura();
+                        } 
+                    })
+                    .catch(error => {
+                        console.error("error a cargar los productos a la auxiliar", error);
+                    });
+
+                })
+                .catch(error => {
+                    console.error("Error para extrar el numero de factura", error);
+                });
             } else {
                 alert("No se pudo crear la factura");
             }
