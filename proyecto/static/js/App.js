@@ -25,6 +25,9 @@ window.onload = function () {
     }
 }
 
+usernameBienvenida.style.textTransform = 'uppercase'; // Convierte el texto a mayúsculas
+usernameBienvenida.style.color = '#ff7782';
+
 
 // PARA QUE SE MANTENGA PRESIONADO CUANDO SE CLICKEA
 // ESTO ES CLAVE PARA CAMBIAR CLASES A ELEMENTOS QUE COMPARTEN UNA CLASE
@@ -147,26 +150,26 @@ function cargarProductos() {
         })
 
 
-        //FUNCION PARA AGREGAR BOTON DE AGREGAR PRODUCTO Y FORMULARIO
-        // Boton "Agregar PRODUCTO" 
-        const addButton = document.createElement('button');
-        addButton.textContent = 'Agregar Producto';
-        addButton.className = 'rounded-button';
-        addButton.addEventListener('click', () => {
-            if (formularioVisible) {
-                
-                mostrarFormularioProductos();
-            }
-        });
+    //FUNCION PARA AGREGAR BOTON DE AGREGAR PRODUCTO Y FORMULARIO
+    // Boton "Agregar PRODUCTO" 
+    const addButton = document.createElement('button');
+    addButton.textContent = 'Agregar Producto';
+    addButton.className = 'rounded-button';
+    addButton.addEventListener('click', () => {
+        if (formularioVisible) {
 
-        // Crea un div para los botones
-        const divBotones = document.createElement("div");
-        divBotones.classList.add("facturaContainer");
+            mostrarFormularioProductos();
+        }
+    });
+
+    // Crea un div para los botones
+    const divBotones = document.createElement("div");
+    divBotones.classList.add("facturaContainer");
 
 
-        // Agrego el botón al "contenido-principal"
-        divBotones.appendChild(addButton);
-        contenidoPrincipal.appendChild(divBotones);
+    // Agrego el botón al "contenido-principal"
+    divBotones.appendChild(addButton);
+    contenidoPrincipal.appendChild(divBotones);
 
 
 }
@@ -314,7 +317,7 @@ function mostrarFormularioProductos() {
 
     //agrego el formulario
     contenidoPrincipal.appendChild(formularioProducto);
-    
+
 }
 
 //FUNCION CANCELAR PRODUCTO
@@ -322,7 +325,7 @@ function cancelarProducto() {
     // Elimina el formulario
     const formulario = document.getElementById('servicioForm');
     if (formularioVisible) { // Revisar si el formulario está visible, no es necesario invertir la condición
-         // Elimina el formulario
+        // Elimina el formulario
         formularioVisible = true; // Actualiza el estado para indicar que el formulario no está visible
         formulario.remove();
     }
@@ -367,9 +370,12 @@ function guardarProducto() {
             // Si la respuesta es igual al mensaje del back, mensaje de éxito 
             if (data.message === "Producto creado exitosamente") {
                 alert("Producto agregado con éxito");
-                cargarProductos();
-                formulario.remove()
-                
+                cargarProductos(); //para eliminar el formulario cuando se agrega
+                const formulario = document.getElementById('servicioForm');
+                if (formulario) {
+                    formulario.remove();
+                }
+
             } else {
                 alert("No se pudo crear el Producto");
                 // Maneja otros casos aquí si es necesario
@@ -382,11 +388,7 @@ function guardarProducto() {
 }
 
 
-
-
 ///FIN DE POST PRODUCTOS
-
-
 /////////////////////////////////////////////FIN DE PRODUCTOS///////////////////////////////////////
 
 
@@ -483,7 +485,115 @@ function cargarServicios() {
 
         })
 
+    //FUNCION PARA AGREGAR BOTON DE AGREGAR SERVICIO Y FORMULARIO
+    // Boton "Agregar SERVICIO" 
+    const addButton = document.createElement('button');
+    addButton.textContent = 'Agregar Servicio';
+    addButton.className = 'rounded-button';
+    addButton.addEventListener('click', () => {
+        if (formularioVisible) {
+
+            mostrarFormularioServicio();
+        }
+    });
+
+    // Crea un div para los botones
+    const divBotones = document.createElement("div");
+    divBotones.classList.add("facturaContainer");
+
+
+    // Agrego el botón al "contenido-principal"
+    divBotones.appendChild(addButton);
+    contenidoPrincipal.appendChild(divBotones);
+
 }
+
+//POST SERVICES ---------------------------------------
+
+function mostrarFormularioServicio() {
+    // Creo formulario
+    const formularioServicio = document.createElement('form');
+    formularioServicio.id = 'servicioForm';
+
+    formularioServicio.innerHTML = `
+        <input type="text" id="nombre" placeholder="Nombre" required>
+        <input type="text" id="descripcion" placeholder="Descripcion" required>
+        <input type="number" id="precio" placeholder="Precio" required>
+        <button type="button" onclick="guardarServicio()" class='small-button rounded-button add-button'> Guardar </button>
+        <button type="button" onclick="cancelarServicio()" class='small-button rounded-button cancel-button'> Cancelar </button>
+        `;
+
+    //agrego el formulario
+    contenidoPrincipal.appendChild(formularioServicio);
+
+}
+
+//FUNCION CANCELAR Servicio
+function cancelarServicio() {
+    // Elimina el formulario
+    const formulario = document.getElementById('servicioForm');
+    if (formularioVisible) { // Revisar si el formulario está visible, no es necesario invertir la condición
+        // Elimina el formulario
+        formularioVisible = true; // Actualiza el estado para indicar que el formulario no está visible
+        formulario.remove();
+    }
+
+}
+
+
+//FUNCION GUARDAR Servicio
+function guardarServicio() {
+    const nombre = document.getElementById('nombre').value;
+    const descripcion = document.getElementById('descripcion').value;
+    const precio = document.getElementById('precio').value;
+
+
+    // Crear un objeto con los datos del Servicio
+    const nuevoServicio = {
+        name: nombre,
+        description: descripcion,
+        price: precio,
+
+    };
+
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-access-token': token,
+            'user-id': userID
+        },
+        body: JSON.stringify(nuevoServicio)  // Convierte el objeto a JSON
+    };
+
+
+    fetch(`http://127.0.0.1:4500/users/${userID}/services`, requestOptions)
+        .then(response => response.json())
+        .then(data => {
+            // Manejar la respuesta del servidor
+            //console.log(data);
+            // Si la respuesta es igual al mensaje del back, mensaje de éxito 
+            if (data.message === "Servicio creado exitosamente") {
+                alert("Servicio agregado con éxito");
+                cargarServicios(); //para eliminar el formulario cuando se agrega
+                const formulario = document.getElementById('servicioForm');
+                if (formulario) {
+                    formulario.remove();
+                }
+
+            } else {
+                alert("No se pudo crear el Servicio");
+                // Maneja otros casos aquí si es necesario
+            }
+        })
+        .catch(error => {
+            // Manejar errores de la solicitud al servidor
+            console.error(error);
+        });
+}
+
+//FIN POST SERVICES -----------------------------------
+
 
 
 //FUNCION EDITAR SERVICIOS
@@ -632,7 +742,7 @@ function cargarClientes() {
         }
     }
 
-    
+
     contenidoPrincipal.innerHTML = '';
 
     // Actualizar el título h2 creando el elemento 
@@ -717,28 +827,28 @@ function cargarClientes() {
 
 
 
-        //FUNCION PARA AGREGAR BOTON DE AGREGAR CLIENTE Y FORMULARIO
-        // Boton "Agregar Cliente" 
-        const addButton = document.createElement('button');
-        addButton.textContent = 'Agregar Cliente';
-        addButton.className = 'rounded-button';
-        addButton.addEventListener('click', () => {
-            if (formularioVisible) {
-                
-                mostrarFormulario();
-            }
-        });
+    //FUNCION PARA AGREGAR BOTON DE AGREGAR CLIENTE Y FORMULARIO
+    // Boton "Agregar Cliente" 
+    const addButton = document.createElement('button');
+    addButton.textContent = 'Agregar Cliente';
+    addButton.className = 'rounded-button';
+    addButton.addEventListener('click', () => {
+        if (formularioVisible) {
 
-        // Crea un div para los botones
-        const divBotones = document.createElement("div");
-        divBotones.classList.add("facturaContainer");
+            mostrarFormulario();
+        }
+    });
+
+    // Crea un div para los botones
+    const divBotones = document.createElement("div");
+    divBotones.classList.add("facturaContainer");
 
 
-        // Agrego el botón al "contenido-principal"
-        divBotones.appendChild(addButton);
-        contenidoPrincipal.appendChild(divBotones);
+    // Agrego el botón al "contenido-principal"
+    divBotones.appendChild(addButton);
+    contenidoPrincipal.appendChild(divBotones);
 
-    
+
 }
 
 
@@ -760,7 +870,7 @@ function mostrarFormulario() {
 
     //agrego el formulario
     contenidoPrincipal.appendChild(formularioCliente);
-    
+
 }
 
 
@@ -768,7 +878,7 @@ function cancelarCliente() {
     // Elimina el formulario
     const formulario = document.getElementById('servicioForm');
     if (formularioVisible) { // Revisar si el formulario está visible, no es necesario invertir la condición
-         // Elimina el formulario
+        // Elimina el formulario
         formularioVisible = true; // Actualiza el estado para indicar que el formulario no está visible
         formulario.remove();
     }
@@ -815,9 +925,12 @@ function guardarCliente() {
             // Si la respuesta es igual al mensaje del back, mensaje de éxito 
             if (data.message === "Cliente creado exitosamente") {
                 alert("Cliente agregado con éxito");
-                cargarClientes();
-                formulario.remove()
-                
+                cargarClientes(); //para eliminar el formulario cuando se agrega
+                const formulario = document.getElementById('servicioForm');
+                if (formulario) {
+                    formulario.remove();
+                }
+
             } else {
                 alert("No se pudo crear el cliente");
                 // Maneja otros casos aquí si es necesario

@@ -200,6 +200,41 @@ def create_product(userID):
 
 
 
+#POST SERVICE
+@app.route('/users/<int:userID>/services', methods=['POST'])
+@token_required
+def create_service(userID):
+    if request.method == 'POST':
+        # Obtener los datos del JSON del request
+        name = request.get_json()['name']
+        description = request.get_json()['description']
+        price = request.get_json()['price']
+        
+
+        # Validar que los datos necesarios estén presentes
+        if not name or not description or price is None:
+            return jsonify({"message": "Faltan datos requeridos"}), 400
+
+        # Verificar si un servicio con el mismo nombre ya existe
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT * FROM Services WHERE userID = %s AND name = %s', (userID, name))
+        existing_product = cur.fetchone()
+        cur.close()
+
+        if existing_product:
+            return jsonify({"message": "El servicio con el mismo nombre ya existe para este usuario"}), 400
+
+        # Crear una nueva entrada en la tabla 'Services' con el userID de la URL
+        cur = mysql.connection.cursor()
+        cur.execute('INSERT INTO Services (name, description, price, userID) VALUES (%s, %s, %s, %s)',
+                    (name, description, price, userID))
+        mysql.connection.commit()
+        cur.close()
+
+        return jsonify({"message": "Servicio creado exitosamente"}), 201
+
+
+
 #SE MODIFICO PARA QUE SEA POR ID Y SE PUEDAN UPDATEAR TODOS LOS CAMPOS QUE SE QUIERAN
 @app.route('/users/<int:userID>/products/<int:id>', methods=['PUT'])
 @token_required
