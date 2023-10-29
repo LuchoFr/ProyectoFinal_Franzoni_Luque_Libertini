@@ -146,6 +146,29 @@ function cargarProductos() {
 
         })
 
+
+        //FUNCION PARA AGREGAR BOTON DE AGREGAR PRODUCTO Y FORMULARIO
+        // Boton "Agregar PRODUCTO" 
+        const addButton = document.createElement('button');
+        addButton.textContent = 'Agregar Producto';
+        addButton.className = 'rounded-button';
+        addButton.addEventListener('click', () => {
+            if (formularioVisible) {
+                
+                mostrarFormularioProductos();
+            }
+        });
+
+        // Crea un div para los botones
+        const divBotones = document.createElement("div");
+        divBotones.classList.add("facturaContainer");
+
+
+        // Agrego el botón al "contenido-principal"
+        divBotones.appendChild(addButton);
+        contenidoPrincipal.appendChild(divBotones);
+
+
 }
 
 
@@ -270,6 +293,99 @@ function eliminar(id, userID) {
             });
     }
 }
+
+
+
+///POST DE PRODUCTOS
+
+function mostrarFormularioProductos() {
+    // Creo formulario
+    const formularioProducto = document.createElement('form');
+    formularioProducto.id = 'servicioForm';
+
+    formularioProducto.innerHTML = `
+        <input type="text" id="nombre" placeholder="Nombre" required>
+        <input type="text" id="descripcion" placeholder="Descripcion" required>
+        <input type="number" id="precio" placeholder="Precio" required>
+        <input type="number" id="stock" placeholder="Stock" required>
+        <button type="button" onclick="guardarProducto()" class='small-button rounded-button add-button'> Guardar </button>
+        <button type="button" onclick="cancelarProducto()" class='small-button rounded-button cancel-button'> Cancelar </button>
+        `;
+
+    //agrego el formulario
+    contenidoPrincipal.appendChild(formularioProducto);
+    
+}
+
+//FUNCION CANCELAR PRODUCTO
+function cancelarProducto() {
+    // Elimina el formulario
+    const formulario = document.getElementById('servicioForm');
+    if (formularioVisible) { // Revisar si el formulario está visible, no es necesario invertir la condición
+         // Elimina el formulario
+        formularioVisible = true; // Actualiza el estado para indicar que el formulario no está visible
+        formulario.remove();
+    }
+
+}
+
+
+//FUNCION GUARDAR PRODUCTO
+function guardarProducto() {
+    const nombre = document.getElementById('nombre').value;
+    const descripcion = document.getElementById('descripcion').value;
+    const precio = document.getElementById('precio').value;
+    const stock = document.getElementById('stock').value;
+
+
+    // Crear un objeto con los datos del Producto
+    const nuevoProducto = {
+        name: nombre,
+        description: descripcion,
+        price: precio,
+        stock: stock,
+
+    };
+
+
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-access-token': token,
+            'user-id': userID
+        },
+        body: JSON.stringify(nuevoProducto)  // Convierte el objeto a JSON
+    };
+
+
+    fetch(`http://127.0.0.1:4500/users/${userID}/products`, requestOptions)
+        .then(response => response.json())
+        .then(data => {
+            // Manejar la respuesta del servidor
+            //console.log(data);
+            // Si la respuesta es igual al mensaje del back, mensaje de éxito 
+            if (data.message === "Producto creado exitosamente") {
+                alert("Producto agregado con éxito");
+                cargarProductos();
+                formulario.remove()
+                
+            } else {
+                alert("No se pudo crear el Producto");
+                // Maneja otros casos aquí si es necesario
+            }
+        })
+        .catch(error => {
+            // Manejar errores de la solicitud al servidor
+            console.error(error);
+        });
+}
+
+
+
+
+///FIN DE POST PRODUCTOS
+
 
 /////////////////////////////////////////////FIN DE PRODUCTOS///////////////////////////////////////
 
