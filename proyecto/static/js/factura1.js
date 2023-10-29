@@ -192,7 +192,7 @@ function mostrarFactura(clienteSeleccionado) {
             const thead = document.createElement("thead");
             const tr = document.createElement("tr");
             const th1 = document.createElement("th");
-            th1.textContent = "Producto";
+            th1.textContent = "Producto/Servicio";
             const th2 = document.createElement("th");
             th2.textContent = "Precio";
             const th3 = document.createElement("th");
