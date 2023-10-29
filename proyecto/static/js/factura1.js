@@ -1,13 +1,19 @@
-let clienteSeleccionado
 let formulario
 let formularioProd
-let clienteCargado = false;
+
+//Llevar el control de lo que se agrega a la factura. 
 let totalFactura = 0
-let productosIni
+
+//banderas para verificacion y diccionarios de cada tabla
+let clienteCargado = false;
 let seAgregoElemento = false;
+let seAgregoProducto = false;
 const productosDict = {};
 const clientsDict = {};
 const serviciosDict = {};
+
+//Elementos para cargar en la factura gobales
+let clienteSeleccionado
 
 const solicitarDatosFactura = async () => {
     try {
@@ -37,7 +43,7 @@ const solicitarDatosFactura = async () => {
             productosDict[producto.name] = producto;
         }));
 
-        productosIni = productosDict;
+
 
 
 /////////////////solicitar clientes
@@ -71,6 +77,7 @@ const solicitarDatosFactura = async () => {
         }));
 
         seAgregoElemento = false
+        seAgregoProducto = false
 
         mostrarClientes()
         
@@ -404,7 +411,7 @@ function CargarFormulario() {
             totalFactura += total
             totalFacturaModificar = document.getElementById("totalFacturaSpan")
             totalFacturaModificar.textContent = totalFactura.toFixed(2)   
-            seAgregoElemento = true; 
+            seAgregoProducto = true; 
 
     } else {
         event.preventDefault(); // Evita que el formulario se envíe
@@ -536,7 +543,7 @@ function agregarServicio() {
 }
 
 function cargarBoleta() {
-    if(seAgregoElemento == true){
+    if(seAgregoElemento == true || seAgregoProducto == true){
 
     // Datos para stock
     const productosArray = Object.values(productosDict); // Obtener un array con los valores de 'productosDict'
@@ -560,7 +567,7 @@ function cargarBoleta() {
 
 
 
-    if(productosDict!=productosIni){
+    if(seAgregoProducto=true){
         const requestOptionsStock = {
             method: 'PUT',
             headers: {
