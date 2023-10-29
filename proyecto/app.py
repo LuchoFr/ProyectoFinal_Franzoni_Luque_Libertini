@@ -580,8 +580,8 @@ def agregar_factura():
         response.status_code = 500
         return response
 
-
-@app.route('/bills/<int:userID>', methods=['GET'])
+###Metodo para obtener ultima factura agregada por usuario
+@app.route('/bills/<int:userID>/ultima', methods=['GET'])
 @token_required
 def get_bills(userID):
     try:
@@ -600,8 +600,11 @@ def get_bills(userID):
                 'date': item[1].strftime('%Y-%m-%d'),  # Formatea la fecha como cadena
                 'price': float(item[2])  # Convierte el precio a un valor decimal
             })
+        
+        elemento_mas_grande = max(result, key=lambda x: x['id'])
 
-        return jsonify(result), 200
+
+        return jsonify(elemento_mas_grande), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
