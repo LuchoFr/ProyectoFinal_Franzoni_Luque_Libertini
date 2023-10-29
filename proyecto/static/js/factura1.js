@@ -1,8 +1,10 @@
-
+let clienteSeleccionado
 let formulario
 let formularioProd
-let clienteCargado = false
+let clienteCargado = false;
 let totalFactura = 0
+let productosIni
+let seAgregoElemento = false;
 const productosDict = {};
 const clientsDict = {};
 const serviciosDict = {};
@@ -34,6 +36,10 @@ const solicitarDatosFactura = async () => {
         await Promise.all(data.map(async (producto) => { //en este caso el map es async crea una promesa por cada una del maepoe el promise.all hace que todas estas promesas se cumplan
             productosDict[producto.name] = producto;
         }));
+
+        productosIni = productosDict;
+
+
 /////////////////solicitar clientes
 
         const realizarfechclientes = await fetch(`http://127.0.0.1:4500/users/${id}/clients`, requestOptions);
@@ -64,7 +70,7 @@ const solicitarDatosFactura = async () => {
             serviciosDict[servicio.name] = servicio;
         }));
 
-        console.log(serviciosDict)
+        seAgregoElemento = false
 
         mostrarClientes()
         
@@ -133,7 +139,7 @@ function mostrarClientes() {
         // Comprueba si se ha seleccionado un cliente antes de continuar
         if (keyClienteSeleccionado) {
             // Puedes utilizar clienteSeleccionado (clave del cliente) para acceder a los datos del cliente en clientsDict
-            const clienteSeleccionado = clientsDict[keyClienteSeleccionado];
+            clienteSeleccionado = clientsDict[keyClienteSeleccionado];
             mostrarFactura(clienteSeleccionado);
         } else {
             alert("Debe seleccionar un cliente para crear la factura.");
@@ -214,6 +220,7 @@ function mostrarFactura(clienteSeleccionado) {
             finalizarBoleta.textContent = "Cargar boleta";
             finalizarBoleta.classList.add("rounded-button")
             finalizarBoleta.classList.add("edit-button")
+            finalizarBoleta.addEventListener("click", cargarBoleta);
 
             divBotones.appendChild(agregarServicioButton);
             divBotones.appendChild(agregarProductoButton);
@@ -255,7 +262,7 @@ function CargarFormulario() {
             contenidoPrincipal.removeChild(formulario);
         }
         catch(e){
-            console.log(e)
+            console.log("")
             contenidoPrincipal.removeChild(formularioProd)
         }
     }
@@ -396,8 +403,8 @@ function CargarFormulario() {
             stockInput.value = "";
             totalFactura += total
             totalFacturaModificar = document.getElementById("totalFacturaSpan")
-            totalFacturaModificar.textContent = totalFactura.toFixed(2)
-            contenidoPrincipal.removeChild(servicioForm);        
+            totalFacturaModificar.textContent = totalFactura.toFixed(2)   
+            seAgregoElemento = true; 
 
     } else {
         event.preventDefault(); // Evita que el formulario se envíe
@@ -422,7 +429,7 @@ function agregarServicio() {
         }
         catch(e){
             contenidoPrincipal.removeChild(formularioProd)
-            console.log(e)
+            console.log("")
         }
     }
 
@@ -520,9 +527,86 @@ function agregarServicio() {
             totalFactura += total;
             const totalFacturaModificar = document.getElementById("totalFacturaSpan");
             totalFacturaModificar.textContent = totalFactura.toFixed(2);
+            seAgregoElemento = true;
 
         } else {
             alert("Debe seleccionar un servicio antes de agregarlo a la factura.");
         }
     });
 }
+
+function cargarBoleta() {
+    if(seAgregoElemento == true){
+
+    // Datos para stock
+    const productosArray = Object.values(productosDict); // Obtener un array con los valores de 'productosDict'
+    const productoListoEnv = {
+        products: productosArray
+    };
+
+    // Datos para factura
+    const fechaBoleta = new Date();
+    const fecha = `${fechaBoleta.getFullYear()}-${(fechaBoleta.getMonth() + 1).toString().padStart(2, '0')}-${fechaBoleta.getDate().toString().padStart(2, '0')}`;
+
+    const totalFacturaEnviar = document.getElementById("totalFacturaSpan");
+    const totalFact = totalFacturaEnviar.textContent;
+
+    const dicFactura = {
+        date: fecha,
+        price: totalFact,
+        userID: userID,
+        clientID: clienteSeleccionado.id
+    };
+
+
+
+    if(productosDict!=productosIni){
+        const requestOptionsStock = {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-access-token': token,
+                'user-id': userID
+            },
+            body: JSON.stringify(productoListoEnv)
+        }
+        fetch('http://127.0.0.1:4500/products/update/stock', requestOptionsStock)
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === "Stock actualizado correctamente") {
+                alert("Stock de productos Actualizado")
+            } 
+        })
+        .catch(error => {
+            console.error("Error al actualizar el stock:", error);
+        });
+    }
+
+    const requestOptionsFactura = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-access-token': token,
+            'user-id': userID
+        },
+        body: JSON.stringify(dicFactura)
+    };
+
+    fetch('http://127.0.0.1:4500/bills', requestOptionsFactura)
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === "Factura agregada con éxito") {
+                alert("Factura agregada con éxito");
+                formulario.remove();
+                solicitarDatosFactura();
+            } else {
+                alert("No se pudo crear la factura");
+            }
+        })
+        .catch(error => {
+            console.error("Error al cargar la factura:", error);
+        });
+}else {
+    alert("No agregado ningun producto o servicio a la boleta")
+}
+} 
