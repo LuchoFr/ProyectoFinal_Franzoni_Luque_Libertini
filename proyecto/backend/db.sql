@@ -54,9 +54,9 @@ CREATE TABLE IF NOT EXISTS Bills(
 CREATE TABLE IF NOT EXISTS BillDetails(
     id INT AUTO_INCREMENT PRIMARY KEY,
     billID INT,
-    productID INT,
-    serviceID INT,
-    productQuantity INT,
+    productID INT NULL, -- Permitir valores nulos para poder cargar solo service en caso de ser null porduct
+    serviceID INT NULL, -- Permitir valores nulos para poder cargar solo products en caso de ser service null
+    productQuantity INT NULL,
     FOREIGN KEY (billID) REFERENCES Bills(id),
     FOREIGN KEY (productID) REFERENCES Products(id),
     FOREIGN KEY (serviceID) REFERENCES Services(id)

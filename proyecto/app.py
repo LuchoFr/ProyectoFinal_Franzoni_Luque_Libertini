@@ -581,6 +581,103 @@ def agregar_factura():
         return response
 
 
+@app.route('/bills/<int:userID>', methods=['GET'])
+@token_required
+def get_bills(userID):
+    try:
+        # Define la consulta SQL para obtener datos de la tabla Bills
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT id, date, price FROM Bills WHERE userID = {0}'.format(userID))
+
+        data = cur.fetchall()
+        cur.close()
+
+        # Formatea los resultados en un formato JSON
+        result = []
+        for item in data:
+            result.append({
+                'id': item[0],
+                'date': item[1].strftime('%Y-%m-%d'),  # Formatea la fecha como cadena
+                'price': float(item[2])  # Convierte el precio a un valor decimal
+            })
+
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+### CARGA DE TABLA AUXILIAR DETALLE FACTURA
+@app.route('/billdetails', methods=['POST'])
+@token_required
+def create_bill_details():
+    try:
+        data = request.get_json()  # Obtiene el JSON enviado en la solicitud
+
+        # Define la consulta SQL para insertar en la tabla BillDetails
+        cur = mysql.connection.cursor()
+
+        for item in data:
+            cur.execute("INSERT INTO BillDetails (billID, productID, serviceID, productQuantity) VALUES (%s, %s, %s, %s)",
+                           (item['billID'], item.get('productID',None), item.get('serviceID', None), item.get('productQuantity',None)))
+        
+        mysql.connection.commit()  # Guarda los cambios en la base de datos
+        cur.close()
+
+        return jsonify({"message": "Detalles de factura creados exitosamente"}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+    
+
+#GET de detalle factura
+@app.route('/billdetails/<int:userID>', methods=['GET'])
+@token_required
+def get_bill_details_by_user(userID):
+    try:
+        # Define la consulta SQL con INNER JOIN para obtener datos relacionados y filtrar por user_id
+        cur = mysql.connection.cursor()
+        cur.execute("""
+                    SELECT BillDetails.id, BillDetails.billID, BillDetails.productID, BillDetails.serviceID, BillDetails.productQuantity,
+                    Products.name AS productName, Services.name AS serviceName,
+                    Bills.date AS billDate, Bills.price AS billPrice,
+                    Clients.name AS clientName, Clients.lastName AS clientLastName, Clients.address AS clientAddress,
+                    Clients.dni AS clientDNI, Clients.cuit AS clientCUIT, Clients.email AS clientEmail
+                    FROM BillDetails
+                    LEFT JOIN Products ON BillDetails.productID = Products.id
+                    LEFT JOIN Services ON BillDetails.serviceID = Services.id
+                    LEFT JOIN Bills ON BillDetails.billID = Bills.id
+                    LEFT JOIN Clients ON Bills.clientID = Clients.id
+                    WHERE Bills.userID = %s
+                    """, (userID,))
+
+        data = cur.fetchall()
+        cur.close()
+
+        # Formatea los resultados en un formato JSON
+        result = []
+        for item in data:
+            result.append({
+                'id': item[0],  # Índice 0: id
+                'billID': item[1],  # Índice 1: billID
+                'productID': item[2],  # Índice 2: productID
+                'serviceID': item[3],  # Índice 3: serviceID
+                'productQuantity': item[4],  # Índice 4: productQuantity
+                'productName': item[5],  # Índice 5: productName
+                'serviceName': item[6],  # Índice 6: serviceName
+                'billDate': item[7],  # Índice 7: billDate
+                'billPrice': item[8],  # Índice 8: billPrice
+                'clientName': item[9],  # Índice 9: clientName
+                'clientLastName': item[10],  # Índice 10: clientLastName
+                'clientAddress': item[11],  # Índice 11: clientAddress
+                'clientDNI': item[12],  # Índice 12: clientDNI
+                'clientCUIT': item[13],  # Índice 13: clientCUIT
+                'clientEmail': item[14]  # Índice 14: clientEmail
+            })
+
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
 if __name__ == '__main__':
     #configuraciones externas
     #un handler manejado por una funcion
