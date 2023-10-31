@@ -492,7 +492,6 @@ function cargarServicios() {
     addButton.className = 'rounded-button';
     addButton.addEventListener('click', () => {
         if (formularioVisible) {
-
             mostrarFormularioServicio();
         }
     });

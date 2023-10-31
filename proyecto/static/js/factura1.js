@@ -16,80 +16,69 @@ let prodServVendidos = {};
 //Elementos para cargar en la factura gobales
 let clienteSeleccionado
 
-const solicitarDatosFactura = async () => {
-    try {
-        const id = localStorage.getItem('id');
-        const token = localStorage.getItem('token');
+const solicitarDatosFactura = () => {
+    const id = localStorage.getItem('id');
+    const token = localStorage.getItem('token');
 
-        const requestOptions = {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-access-token': token,
-                'user-id': id
+    const requestOptions = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-access-token': token,
+            'user-id': id
+        }
+    };
+
+    fetch(`http://127.0.0.1:4500/users/${id}/products`, requestOptions)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al realizar la solicitud de productos.');
             }
-        };
-
-        ///////////////solicitar productos
-        const realizarfech = await fetch(`http://127.0.0.1:4500/users/${id}/products`, requestOptions);
-
-        if (!realizarfech.ok) {
-            throw new Error('Error al realizar la solicitud.');
-        }
-
-        const data = await realizarfech.json();
-
-        
-        await Promise.all(data.map(async (producto) => { //en este caso el map es async crea una promesa por cada una del maepoe el promise.all hace que todas estas promesas se cumplan
-            productosDict[producto.name] = producto;
-        }));
-
-
-
-
-/////////////////solicitar clientes
-
-        const realizarfechclientes = await fetch(`http://127.0.0.1:4500/users/${id}/clients`, requestOptions);
-
-        if (!realizarfechclientes.ok) {
-            throw new Error('Error al realizar la solicitud.');
-        }
-
-        const dataclientes = await realizarfechclientes.json();
-
-        
-        await Promise.all(dataclientes.map(async (cliente) => { //en este caso el map es async crea una promesa por cada una del maepoe el promise.all hace que todas estas promesas se cumplan
-            clientsDict[cliente.name] = cliente;
-        }));
-        
-//////////////Solicitar servicios
-        
-        const realizarfechservicios = await fetch(`http://127.0.0.1:4500/users/${id}/services`, requestOptions);
-
-        if (!realizarfechservicios.ok) {
-            throw new Error('Error al realizar la solicitud.');
-        }
-
-        const dataServicios = await realizarfechservicios.json();
-
-
-        await Promise.all(dataServicios.map(async (servicio) => { //en este caso el map es async crea una promesa por cada una del maepoe el promise.all hace que todas estas promesas se cumplan
-            serviciosDict[servicio.name] = servicio;
-        }));
-
-        seAgregoElemento = false
-        seAgregoProducto = false
-        prodServVendidos = {}; //lo actualizo por si sale de la factura y se pone en 0
-        mostrarClientes()
-        
-
-    } catch (err) {
-        console.error(err);
-    }
+            return response.json();
+        })
+        .then(data => {
+            return Promise.all(data.map(producto => {
+                productosDict[producto.name] = producto;
+            }));
+        })
+        .then(() => {
+            return fetch(`http://127.0.0.1:4500/users/${id}/clients`, requestOptions);
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al realizar la solicitud de clientes.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            return Promise.all(data.map(cliente => {
+                clientsDict[cliente.name] = cliente;
+            }));
+        })
+        .then(() => {
+            return fetch(`http://127.0.0.1:4500/users/${id}/services`, requestOptions);
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al realizar la solicitud de servicios.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            return Promise.all(data.map(servicio => {
+                serviciosDict[servicio.name] = servicio;
+            }));
+        })
+        .then(() => {
+            seAgregoElemento = false;
+            seAgregoProducto = false;
+            prodServVendidos = {};
+            mostrarClientes();
+        })
+        .catch(err => {
+            console.error(err);
+        });
 };
-
-
-
 function mostrarClientes() {
         totalFactura = 0
         contenidoPrincipal = document.querySelector(".contenido-principal");
@@ -146,8 +135,9 @@ function mostrarClientes() {
 
     // Agrega un evento al botón "Aceptar"
     aceptarButton.addEventListener("click", function () {
-        // Comprueba si se seleccionó un cliente antes de continuar
+        // Comprueba si se ha seleccionado un cliente antes de continuar
         if (keyClienteSeleccionado) {
+            // Puedes utilizar clienteSeleccionado (clave del cliente) para acceder a los datos del cliente en clientsDict
             clienteSeleccionado = clientsDict[keyClienteSeleccionado];
             mostrarFactura(clienteSeleccionado);
         } else {
@@ -193,7 +183,7 @@ function mostrarFactura(clienteSeleccionado) {
             const thead = document.createElement("thead");
             const tr = document.createElement("tr");
             const th1 = document.createElement("th");
-            th1.textContent = "Producto/Servicio";
+            th1.textContent = "Producto";
             const th2 = document.createElement("th");
             th2.textContent = "Precio";
             const th3 = document.createElement("th");
@@ -263,21 +253,18 @@ function asignarEventoClick(agregarProductoButton) {
 
 
 
-function limpiarFormulario() {
-    const formularioServicio = document.getElementById("servicioForm");
-    const formularioProducto = document.getElementById("productoForm");
-
-    if (formularioServicio) {
-        formularioServicio.remove();
-    } else if (formularioProducto) {
-        formularioProducto.remove();
-    }
-} 
-
-
-
 function CargarFormulario() {
-    limpiarFormulario()
+    formulario = document.getElementById("servicioForm");
+    formularioProd = document.getElementById("productoForm");
+    if (formulario || formularioProd) {
+        try{
+            contenidoPrincipal.removeChild(formulario);
+        }
+        catch(e){
+            console.log("")
+            contenidoPrincipal.removeChild(formularioProd)
+        }
+    }
 
     formulario = document.createElement("form");
     formulario.setAttribute("id", "productoForm");
@@ -449,7 +436,18 @@ function CargarFormulario() {
 }
 
 function agregarServicio() {
-    limpiarFormulario()
+    formulario = document.getElementById("servicioForm");
+    formularioProd = document.getElementById("productoForm");
+    if (formulario || formularioProd) {
+        try{
+            contenidoPrincipal.removeChild(formulario);
+        }
+        catch(e){
+            contenidoPrincipal.removeChild(formularioProd)
+            console.log("")
+        }
+    }
+
     formulario = document.createElement("form");
     formulario.setAttribute("id", "servicioForm");
 
