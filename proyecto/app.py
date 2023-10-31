@@ -129,7 +129,7 @@ def loggin():
 def listar_productos(userID):
     #try:
         cur = mysql.connection.cursor()
-        cur.execute('SELECT * FROM products WHERE userID = {0}'.format(userID))
+        cur.execute('SELECT * FROM products WHERE userID = %s AND borradoLogico = %s',(userID,'1'))
          #almacenamos una lista de productos
         data = cur.fetchall()
         print(data)
@@ -151,7 +151,7 @@ def listar_productos(userID):
 def listar_servicios(userID):
     #try:
         cur = mysql.connection.cursor()
-        cur.execute('SELECT * FROM services WHERE userID = {0}'.format(userID))
+        cur.execute('SELECT * FROM services WHERE userID = %s AND borradoLogico = %s',(userID,'1'))
          #almacenamos una lista de servicios
         data = cur.fetchall()
         print(data)
@@ -191,8 +191,8 @@ def create_product(userID):
 
         # Crear una nueva entrada en la tabla 'Products' con el userID de la URL
         cur = mysql.connection.cursor()
-        cur.execute('INSERT INTO Products (name, description, price, stock, userID) VALUES (%s, %s, %s, %s, %s)',
-                    (name, description, price, stock, userID))
+        cur.execute('INSERT INTO Products (name, description, price, stock, userID, borradoLogico) VALUES (%s, %s, %s, %s, %s, %s)',
+                    (name, description, price, stock, userID, '1'))
         mysql.connection.commit()
         cur.close()
 
@@ -226,8 +226,8 @@ def create_service(userID):
 
         # Crear una nueva entrada en la tabla 'Services' con el userID de la URL
         cur = mysql.connection.cursor()
-        cur.execute('INSERT INTO Services (name, description, price, userID) VALUES (%s, %s, %s, %s)',
-                    (name, description, price, userID))
+        cur.execute('INSERT INTO Services (name, description, price, userID, borradoLogico) VALUES (%s, %s, %s, %s, %s)',
+                    (name, description, price, userID, '1'))
         mysql.connection.commit()
         cur.close()
 
@@ -380,11 +380,11 @@ def update_service(userID, id):
 
 
 
-####DELETE PRODUCT
-@app.route('/users/<int:userID>/products/<int:id>', methods=['DELETE'])
+####DELETE PRODUCT (borrado logico)
+@app.route('/users/<int:userID>/deleteProduct/<int:id>', methods=['PUT'])
 @token_required
 def delete_product(userID, id):
-    if request.method == 'DELETE':
+    if request.method == 'PUT':
         # Verificar si el producto a eliminar existe
         cur = mysql.connection.cursor()
         cur.execute('SELECT * FROM Products WHERE userID = %s AND id = %s', (userID, id))
@@ -396,7 +396,7 @@ def delete_product(userID, id):
 
         # Eliminar el producto de la tabla 'Products' basado en el nombre y el ID del usuario
         cur = mysql.connection.cursor()
-        cur.execute('DELETE FROM Products WHERE userID = %s AND id = %s', (userID, id))
+        cur.execute('UPDATE Products SET borradoLogico = %s  WHERE userID = %s AND id = %s', ('0',userID,id))
         mysql.connection.commit()
         cur.close()
 
@@ -410,7 +410,7 @@ def delete_product(userID, id):
 def listar_clientes(userID):
     #try:
         cur = mysql.connection.cursor()
-        cur.execute('SELECT * FROM clients WHERE userID = {0}'.format(userID))
+        cur.execute('SELECT * FROM clients  WHERE userID = %s AND borradoLogico = %s',(userID,'1'))
          #almacenamos una lista de clientes
         data = cur.fetchall()
         print(data)
@@ -451,8 +451,8 @@ def create_client(userID):
 
         # Crear una nueva entrada en la tabla 'Clients' con el userID de la URL
         cur = mysql.connection.cursor()
-        cur.execute('INSERT INTO Clients (name, lastName, address, dni, cuit, email, userID) VALUES (%s, %s, %s, %s, %s, %s, %s)',
-                    (name, lastName, address, dni, cuit, email, userID))
+        cur.execute('INSERT INTO Clients (name, lastName, address, dni, cuit, email, userID, borradoLogico) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
+                    (name, lastName, address, dni, cuit, email, userID, '1'))
         mysql.connection.commit()
         cur.close()
 
@@ -526,11 +526,11 @@ def update_client(userID, id):
 
 
 
-####DELETE CLIENT
-@app.route('/users/<int:userID>/clients/<int:id>', methods=['DELETE'])
+####DELETE CLIENT borrado logico
+@app.route('/users/<int:userID>/deleteClient/<int:id>', methods=['PUT'])
 @token_required
 def delete_client(userID, id):
-    if request.method == 'DELETE':
+    if request.method == 'PUT':
         # Verificar si el cliente a eliminar existe
         cur = mysql.connection.cursor()
         cur.execute('SELECT * FROM Clients WHERE userID = %s AND id = %s', (userID, id))
@@ -542,11 +542,34 @@ def delete_client(userID, id):
 
         # Eliminar el producto de la tabla 'Products' basado en el nombre y el ID del usuario
         cur = mysql.connection.cursor()
-        cur.execute('DELETE FROM Clients WHERE userID = %s AND id = %s', (userID, id))
+        cur.execute('UPDATE Clients SET borradoLogico = %s WHERE userID = %s AND id = %s', ('0',userID, id))
         mysql.connection.commit()
         cur.close()
 
         return jsonify({"message": "Cliente eliminado exitosamente"}), 200
+    
+
+####DELETE Service borrado logico
+@app.route('/users/<int:userID>/deleteService/<int:id>', methods=['PUT'])
+@token_required
+def delete_service(userID, id):
+    if request.method == 'PUT':
+        # Verificar si el servicio a eliminar existe
+        cur = mysql.connection.cursor()
+        cur.execute('SELECT * FROM Services WHERE userID = %s AND id = %s', (userID, id))
+        existing_client = cur.fetchone()
+        cur.close()
+
+        if not existing_client:
+            return jsonify({"message": "El servicio no existe o no pertenece a este usuario"}), 404
+
+        # Eliminar el producto de la tabla 'Products' basado en el nombre y el ID del usuario
+        cur = mysql.connection.cursor()
+        cur.execute('UPDATE Services SET borradoLogico = %s WHERE userID = %s AND id = %s', ('0',userID, id))
+        mysql.connection.commit()
+        cur.close()
+
+        return jsonify({"message": "Servicio eliminado exitosamente"}), 200
     
     
 ### METODOS PARA FACTURAS ###
