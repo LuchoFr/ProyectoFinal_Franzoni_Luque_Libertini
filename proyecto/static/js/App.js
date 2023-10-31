@@ -272,8 +272,8 @@ function eliminar(id, userID) {
 
     if (confirmacion) {
         // Realizar una solicitud DELETE para eliminar el producto
-        fetch(`http://127.0.0.1:4500/users/${userID}/products/${id}`, {
-            method: 'DELETE',
+        fetch(`http://127.0.0.1:4500/users/${userID}/deleteProduct/${id}`, {
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 'x-access-token': token,
@@ -693,8 +693,8 @@ function eliminarServicio(id, userID) {
 
     if (confirmacion) {
         // Realizar una solicitud DELETE para eliminar el servicio
-        fetch(`http://127.0.0.1:4500/users/${userID}/services/${id}`, {
-            method: 'DELETE',
+        fetch(`http://127.0.0.1:4500/users/${userID}/deleteService/${id}`, {
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 'x-access-token': token,
@@ -1043,8 +1043,8 @@ function eliminarCliente(id, userID) {
 
     if (confirmacion) {
         // Realizar una solicitud DELETE para eliminar el producto
-        fetch(`http://127.0.0.1:4500/users/${userID}/clients/${id}`, {
-            method: 'DELETE',
+        fetch(`http://127.0.0.1:4500/users/${userID}/deleteClient/${id}`, {
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 'x-access-token': token,
