@@ -88,6 +88,8 @@ const solicitarDatosFactura = async () => {
     }
 };
 
+
+
 function mostrarClientes() {
         totalFactura = 0
         contenidoPrincipal = document.querySelector(".contenido-principal");
@@ -144,9 +146,8 @@ function mostrarClientes() {
 
     // Agrega un evento al botón "Aceptar"
     aceptarButton.addEventListener("click", function () {
-        // Comprueba si se ha seleccionado un cliente antes de continuar
+        // Comprueba si se seleccionó un cliente antes de continuar
         if (keyClienteSeleccionado) {
-            // Puedes utilizar clienteSeleccionado (clave del cliente) para acceder a los datos del cliente en clientsDict
             clienteSeleccionado = clientsDict[keyClienteSeleccionado];
             mostrarFactura(clienteSeleccionado);
         } else {
@@ -262,18 +263,21 @@ function asignarEventoClick(agregarProductoButton) {
 
 
 
-function CargarFormulario() {
-    formulario = document.getElementById("servicioForm");
-    formularioProd = document.getElementById("productoForm");
-    if (formulario || formularioProd) {
-        try{
-            contenidoPrincipal.removeChild(formulario);
-        }
-        catch(e){
-            console.log("")
-            contenidoPrincipal.removeChild(formularioProd)
-        }
+function limpiarFormulario() {
+    const formularioServicio = document.getElementById("servicioForm");
+    const formularioProducto = document.getElementById("productoForm");
+
+    if (formularioServicio) {
+        formularioServicio.remove();
+    } else if (formularioProducto) {
+        formularioProducto.remove();
     }
+} 
+
+
+
+function CargarFormulario() {
+    limpiarFormulario()
 
     formulario = document.createElement("form");
     formulario.setAttribute("id", "productoForm");
@@ -445,18 +449,7 @@ function CargarFormulario() {
 }
 
 function agregarServicio() {
-    formulario = document.getElementById("servicioForm");
-    formularioProd = document.getElementById("productoForm");
-    if (formulario || formularioProd) {
-        try{
-            contenidoPrincipal.removeChild(formulario);
-        }
-        catch(e){
-            contenidoPrincipal.removeChild(formularioProd)
-            console.log("")
-        }
-    }
-
+    limpiarFormulario()
     formulario = document.createElement("form");
     formulario.setAttribute("id", "servicioForm");
 
