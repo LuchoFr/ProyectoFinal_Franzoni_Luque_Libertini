@@ -121,7 +121,7 @@ function cargarProductos() {
                 
                 const fila = document.createElement('tr')
             
-                fila.className = stockClass; // Asignar la clase al elemento tr
+
                 //Me quedo con la fila
                 fila.id = producto.id
 

@@ -88,7 +88,7 @@ function mostrarClientes() {
         contenidoPrincipal.innerHTML = '';
 
         const h2CargarCliente = document.createElement("h2");
-        h2CargarCliente.textContent = "Seleccione un cliente para crear/consultar una Factura" 
+        h2CargarCliente.textContent = "Seleccione un cliente para crear una Factura" 
         // Agrega un menú desplegable para el cliente
         const clienteSelect = document.createElement("select");
         clienteSelect.setAttribute("name", "Clientes");
@@ -122,16 +122,11 @@ function mostrarClientes() {
     aceptarButton.textContent = "Aceptar";
     aceptarButton.classList.add("rounded-button");
 
-    const h2HistorialFacturas = document.createElement("h2");
-    h2HistorialFacturas.textContent= "Historial de facturas"
-    h2HistorialFacturas.id = "h2-verFac"
-
-
     contenidoPrincipal = document.querySelector(".contenido-principal");
     contenidoPrincipal.appendChild(h2CargarCliente)
     contenidoPrincipal.appendChild(clienteSelect);
     contenidoPrincipal.appendChild(aceptarButton);
-    contenidoPrincipal.appendChild(h2HistorialFacturas);
+
 
     // Variable para almacenar el cliente seleccionado
     let keyClienteSeleccionado = null;
