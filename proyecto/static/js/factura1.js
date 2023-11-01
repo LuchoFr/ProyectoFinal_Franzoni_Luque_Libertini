@@ -79,6 +79,8 @@ const solicitarDatosFactura = () => {
             console.error(err);
         });
 };
+
+
 function mostrarClientes() {
         totalFactura = 0
         contenidoPrincipal = document.querySelector(".contenido-principal");
@@ -86,7 +88,7 @@ function mostrarClientes() {
         contenidoPrincipal.innerHTML = '';
 
         const h2CargarCliente = document.createElement("h2");
-        h2CargarCliente.textContent = "Seleccione un cliente para realizar la Factura" 
+        h2CargarCliente.textContent = "Seleccione un cliente para crear una Factura" 
         // Agrega un menú desplegable para el cliente
         const clienteSelect = document.createElement("select");
         clienteSelect.setAttribute("name", "Clientes");
@@ -124,6 +126,7 @@ function mostrarClientes() {
     contenidoPrincipal.appendChild(h2CargarCliente)
     contenidoPrincipal.appendChild(clienteSelect);
     contenidoPrincipal.appendChild(aceptarButton);
+
 
     // Variable para almacenar el cliente seleccionado
     let keyClienteSeleccionado = null;
@@ -378,37 +381,66 @@ function CargarFormulario() {
             }
             
 
-            console.log(prodServVendidos)
-
             // Calcula el total
             const total = precio * cantidad;
+            
 
-            // Crea una nueva fila de tabla
-            const newRow = document.createElement("tr");
+            // VERIFICACION SI EL PRODUCTO A AGREGAR EXISTE EN LA TABLA 
 
-            // Crea las celdas de la fila
-            const cellProducto = document.createElement("td");
-            const cellPrecio = document.createElement("td");
-            const cellCantidad = document.createElement("td");
-            const cellTotal = document.createElement("td");
-
-            // Asigna los valores a las celdas
-            cellProducto.textContent = productoSeleccionado;
-            cellPrecio.textContent = `$ ${precio}`;
-            cellCantidad.textContent = cantidad;
-            cellTotal.textContent = `$ ${total.toFixed(2)}`;
-
-            // Agrega las celdas a la fila
-            newRow.appendChild(cellProducto);
-            newRow.appendChild(cellPrecio);
-            newRow.appendChild(cellCantidad);
-            newRow.appendChild(cellTotal);
-
-            // Agrega la fila a la tabla
+            // Obtén la tabla y su cuerpo (tbody)
             const facturaTable = document.getElementById("facturaTable");
             const tbody = facturaTable.querySelector("tbody");
-            tbody.appendChild(newRow);
 
+            // Busca si el producto ya está en la tabla
+            const filasProducto = tbody.getElementsByTagName("tr");
+            let productoExistente = null;
+
+            for (let i = 0; i < filasProducto.length; i++) {
+                const celdas = filasProducto[i].getElementsByTagName("td");
+                if (celdas[0].textContent === productoSeleccionado) { // Comprueba si el nombre del producto coincide
+                    productoExistente = filasProducto[i];
+                    break; //Sale del for si lo encuentra cambiando la bandera
+                }
+            }
+            //verifica la vandera 
+            if (productoExistente) {
+                // Si el producto ya está en la tabla, actualiza solo la cantidad y el total
+                const celdas = productoExistente.getElementsByTagName("td");
+                const cantidadActual = parseInt(celdas[2].textContent, 10); // Obtiene la cantidad actual
+                const totalActual = parseFloat(celdas[3].textContent.replace("$ ", "")); // Obtiene el total actual
+
+                // Calcula la nueva cantidad y el nuevo total
+                const nuevaCantidad = cantidadActual + cantidad; //stock de la fila 
+                const nuevoTotal = totalActual + total; //total de la fila
+
+                // Actualiza la cantidad y el total en la fila existente
+                celdas[2].textContent = nuevaCantidad; 
+                celdas[3].textContent = `$ ${nuevoTotal.toFixed(2)}`; 
+            } else {
+                // Si el producto no está en la tabla, crea una nueva fila
+                const newRow = document.createElement("tr");
+
+                // Crea las celdas de la fila
+                const cellProducto = document.createElement("td");
+                const cellPrecio = document.createElement("td");
+                const cellCantidad = document.createElement("td");
+                const cellTotal = document.createElement("td");
+
+                // Asigna los valores a las celdas
+                cellProducto.textContent = productoSeleccionado;
+                cellPrecio.textContent = `$ ${precio}`;
+                cellCantidad.textContent = cantidad;
+                cellTotal.textContent = `$ ${total.toFixed(2)}`;
+
+                // Agrega las celdas a la fila
+                newRow.appendChild(cellProducto);
+                newRow.appendChild(cellPrecio);
+                newRow.appendChild(cellCantidad);
+                newRow.appendChild(cellTotal);
+
+                // Agrega la fila a la tabla
+                tbody.appendChild(newRow);
+            }
             // Limpia el formulario
             productoSelect.selectedIndex = 0;
             cantidadInput.value = "";

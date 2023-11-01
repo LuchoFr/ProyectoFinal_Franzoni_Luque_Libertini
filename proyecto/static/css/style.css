@@ -304,6 +304,7 @@ main .contenido-principal a{
     text-align: center;
     text-decoration: none;
     font-size: 16px;
+    margin-bottom: 5px;
 }
 
 /* Estilo para un botón redondeado cuando se pasa el cursor por encima */

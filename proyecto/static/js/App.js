@@ -117,7 +117,10 @@ function cargarProductos() {
 
             //cargamos productos a la tabla
             data.forEach(producto => {
+
+                
                 const fila = document.createElement('tr')
+            
 
                 //Me quedo con la fila
                 fila.id = producto.id
