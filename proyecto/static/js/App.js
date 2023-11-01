@@ -117,8 +117,11 @@ function cargarProductos() {
 
             //cargamos productos a la tabla
             data.forEach(producto => {
-                const fila = document.createElement('tr')
 
+                
+                const fila = document.createElement('tr')
+            
+                fila.className = stockClass; // Asignar la clase al elemento tr
                 //Me quedo con la fila
                 fila.id = producto.id
 
