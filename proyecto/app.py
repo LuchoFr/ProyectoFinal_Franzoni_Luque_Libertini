@@ -729,54 +729,33 @@ def get_bill_details_rankingProduct(userID):
         data = cur.fetchall()
         cur.close()
 
-        # Formatea los resultados en un formato JSON
-        result = []
-        for item in data:
-            result.append({
-                'id': item[0],  # Índice 0: id
-                'billID': item[1],  # Índice 1: billID
-                'productID': item[2],  # Índice 2: productID
-                'serviceID': item[3],  # Índice 3: serviceID
-                'productQuantity': item[4],  # Índice 4: productQuantity
-                'productName': item[5],  # Índice 5: productName
-                'serviceName': item[6],  # Índice 6: serviceName
-                'billDate': item[7],  # Índice 7: billDate
-                'billPrice': item[8],  # Índice 8: billPrice
-                'clientName': item[9],  # Índice 9: clientName
-                'clientLastName': item[10],  # Índice 10: clientLastName
-                'clientAddress': item[11],  # Índice 11: clientAddress
-                'clientDNI': item[12],  # Índice 12: clientDNI
-                'clientCUIT': item[13],  # Índice 13: clientCUIT
-                'clientEmail': item[14]  # Índice 14: clientEmail
-            })
-        
-
         # Usaremos un diccionario para rastrear la cantidad total por 'productID'
         product_quantities = defaultdict(int)
 
+        # Crea una lista para guardar el resultado final
+        product_summary = []
+
         # Recorre la lista de detalles de la factura 'result' y suma las cantidades por 'productID'
-        for item in result:
-            product_id = item['productID']
-            if item['productQuantity'] is None:
-                product_quantity=0
-            else:
-                product_quantity = item['productQuantity']
+        for item in data:
+            product_id = item[2]  # Índice 2: productID
+            product_quantity = item[4] if item[4] is not None else 0  # Índice 4: productQuantity
+            product_name = item[5]  # Índice 5: productName
+
             product_quantities[product_id] += product_quantity
 
-        # Crea la lista de diccionarios con 'productID', 'productName' y 'cantidad'
-        product_summary = []
-        for item in result:
-            product_id = item['productID']
-            product_name = item['productName']
-            total_quantity = product_quantities[product_id]
+            # Si el producto no está en product_summary, agrégalo
+            if product_id not in [p['productID'] for p in product_summary]:
+                product_summary.append({
+                    'productID': product_id,
+                    'productName': product_name,
+                    'cantidad': 0  # Inicializamos en 0
+                })
+        
+        # Actualiza la cantidad en product_summary
+        for item in product_summary:
+            item['cantidad'] = product_quantities[item['productID']]
 
-            product_summary.append({
-                'productID': product_id,
-                'productName': product_name,
-                'cantidad': total_quantity
-            })
-
-        product_summary = [item for item in product_summary if item["productID"] is not None]
+        product_summary = [item for item in product_summary if item['cantidad'] > 0]
         return jsonify(product_summary), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
@@ -861,6 +840,51 @@ def get_bill_details_rankingService(userID):
 
         service_summary = [item for item in service_summary if item["serviceID"] is not None]
         return jsonify(service_summary), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+    
+
+#GET ranking de ventas por cliente
+@app.route('/rankingCliente/<int:userID>', methods=['GET'])
+@token_required
+def get_bill_details_rankingCliente(userID):
+    try:
+        # Define la consulta SQL con INNER JOIN para obtener datos relacionados y filtrar por user_id
+        cur = mysql.connection.cursor()
+        cur.execute("""
+                    SELECT 
+                        Clients.id AS clientID,
+                        Clients.name AS clientName, 
+                        Clients.lastName AS clientLastName, 
+                        Clients.address AS clientAddress,
+                        Clients.dni AS clientDNI, 
+                        Clients.cuit AS clientCUIT, 
+                        Clients.email AS clientEmail,
+                        SUM(Bills.price) AS totalSpent
+                    FROM Clients
+                    LEFT JOIN Bills ON Clients.id = Bills.clientID
+                    WHERE Bills.userID = %s
+                    GROUP BY clientID, clientName, clientLastName, clientAddress, clientDNI, clientCUIT, clientEmail
+                    """, (userID,))
+
+        data = cur.fetchall()
+        cur.close()
+
+        # Formatea los resultados en un formato JSON
+        result = []
+        for item in data:
+            result.append({
+                'clientID': item[0],
+                'clientName': item[1],
+                'clientLastName': item[2],
+                'clientAddress': item[3],
+                'clientDNI': item[4],
+                'clientCUIT': item[5],
+                'clientEmail': item[6],
+                'totalSpent': item[7]
+            })
+
+        return jsonify(result), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
