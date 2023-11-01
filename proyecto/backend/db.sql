@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS Clients (
     cuit VARCHAR(255),
     email VARCHAR(50),
     userID INT,
+    borradoLogico INT, /*valor = 1 debe mostrarse valor = 0 no debe mostrarse*/
     FOREIGN KEY (userID) REFERENCES Users(id)
 );
 
@@ -29,6 +30,7 @@ CREATE TABLE IF NOT EXISTS Products(
     price DECIMAL(10,2),
     stock INT,
     userID INT,
+    borradoLogico INT, /*valor = 1 debe mostrarse valor = 0 no debe mostrarse*/
     FOREIGN KEY (userID) REFERENCES Users(id)
 );
 
@@ -38,6 +40,7 @@ CREATE TABLE IF NOT EXISTS Services(
     description VARCHAR(255),
     price DECIMAL(10,2),
     userID INT,
+    borradoLogico INT, /*valor = 1 debe mostrarse valor = 0 no debe mostrarse*/
     FOREIGN KEY (userID) REFERENCES Users(id) 
 );
 
@@ -75,41 +78,41 @@ VALUES
 
 
 /* QUERIES PRODUCTS */
-INSERT INTO Products (name, description, price, stock, userID)
+INSERT INTO Products (name, description, price, stock, userID, borradoLogico)
 VALUES
-    ('Smartphone XYZ', 'Un smartphone de última generación', 799.99, 50, 1),
-    ('Laptop SuperPro', 'Una laptop potente para profesionales', 1299.99, 30, 2),
-    ('Cámara Digital HD', 'Cámara para aficionados a la fotografía', 299.95, 25, 3),
-    ('Auriculares Inalámbricos', 'Auriculares de alta calidad', 99.99, 100, 1),
-    ('Televisor 4K', 'Televisor de 55 pulgadas con calidad 4K', 699.99, 20, 2),
-    ('Tablet Mini', 'Tablet compacta para entretenimiento', 199.99, 40, 3),
-    ('Impresora Todo-en-Uno', 'Impresora para uso doméstico', 79.95, 15, 1),
-    ('Teclado Mecánico', 'Teclado gaming con retroiluminación LED', 49.99, 60, 2),
-    ('Monitor Curvo', 'Monitor de 27 pulgadas con diseño curvo', 299.99, 10, 3),
-    ('Altavoz Bluetooth', 'Altavoz portátil con conexión Bluetooth', 29.99, 75, 1);
+    ('Smartphone XYZ', 'Un smartphone de última generación', 799.99, 50, 1, 1),
+    ('Laptop SuperPro', 'Una laptop potente para profesionales', 1299.99, 30, 2, 1),
+    ('Cámara Digital HD', 'Cámara para aficionados a la fotografía', 299.95, 25, 3, 1),
+    ('Auriculares Inalámbricos', 'Auriculares de alta calidad', 99.99, 100, 1, 1),
+    ('Televisor 4K', 'Televisor de 55 pulgadas con calidad 4K', 699.99, 20, 2, 1),
+    ('Tablet Mini', 'Tablet compacta para entretenimiento', 199.99, 40, 3, 1),
+    ('Impresora Todo-en-Uno', 'Impresora para uso doméstico', 79.95, 15, 1, 1),
+    ('Teclado Mecánico', 'Teclado gaming con retroiluminación LED', 49.99, 60, 2, 1),
+    ('Monitor Curvo', 'Monitor de 27 pulgadas con diseño curvo', 299.99, 10, 3, 1),
+    ('Altavoz Bluetooth', 'Altavoz portátil con conexión Bluetooth', 29.99, 75, 1, 1);
 
 
 /* QUERIES SERVICES */
-INSERT INTO Services (name, description, price, userID)
+INSERT INTO Services (name, description, price, userID, borradoLogico)
 VALUES
-    ('Mantenimiento de Redes Empresariales', 'Servicio de mantenimiento y optimización de redes corporativas', 80.00, 1),
-    ('Desarrollo de Aplicaciones Web', 'Creación de aplicaciones web personalizadas', 100.00, 1),
-    ('Soporte Técnico Remoto', 'Asistencia técnica a distancia para problemas informáticos', 40.00, 2),
-    ('Diseño de Interfaces de Usuario', 'Diseño y desarrollo de interfaces de usuario atractivas', 90.00, 2),
-    ('Servicio de Seguridad de Datos', 'Protección y auditoría de la seguridad de datos', 70.00, 3),
-    ('Recuperación de Datos', 'Recuperación de datos perdidos o dañados', 60.00, 3),
-    ('Optimización de Sistemas', 'Mejora del rendimiento y optimización de sistemas informáticos', 75.00, 1),
-    ('Servicio de Consultoría en Ciberseguridad', 'Consultoría y auditoría en ciberseguridad', 110.00, 2);
+    ('Mantenimiento de Redes Empresariales', 'Servicio de mantenimiento y optimización de redes corporativas', 80.00, 1, 1),
+    ('Desarrollo de Aplicaciones Web', 'Creación de aplicaciones web personalizadas', 100.00, 1, 1),
+    ('Soporte Técnico Remoto', 'Asistencia técnica a distancia para problemas informáticos', 40.00, 2, 1),
+    ('Diseño de Interfaces de Usuario', 'Diseño y desarrollo de interfaces de usuario atractivas', 90.00, 2, 1),
+    ('Servicio de Seguridad de Datos', 'Protección y auditoría de la seguridad de datos', 70.00, 3, 1),
+    ('Recuperación de Datos', 'Recuperación de datos perdidos o dañados', 60.00, 3, 1),
+    ('Optimización de Sistemas', 'Mejora del rendimiento y optimización de sistemas informáticos', 75.00, 1, 1),
+    ('Servicio de Consultoría en Ciberseguridad', 'Consultoría y auditoría en ciberseguridad', 110.00, 2, 1);
 
 /*QUERIES CLIENTES*/
-INSERT INTO Clients (name, lastName, address, dni, cuit, email, userID)
+INSERT INTO Clients (name, lastName, address, dni, cuit, email, userID, borradoLogico)
 VALUES
-    ('Juan', 'Pérez', '123 Calle Principal', '12345678', '20345678901', 'juan@email.com', 1),
-    ('Ana', 'González', '456 Calle Secundaria', '87654321', '30345678902', 'ana@email.com', 1),
-    ('Pedro', 'Sánchez', '789 Avenida Central', '98765432', '40345678903', 'pedro@email.com', 2),
-    ('María', 'López', '101 Plaza Mayor', '23456789', '50345678904', 'maria@email.com', 2),
-    ('Luis', 'Martínez', '202 Calle Estrella', '34567890', '60345678905', 'luis@email.com', 3),
-    ('Laura', 'Rodríguez', '303 Avenida del Sol', '45678901', '70345678906', 'laura@email.com', 3);
+    ('Juan', 'Pérez', '123 Calle Principal', '12345678', '20345678901', 'juan@email.com', 1, 1),
+    ('Ana', 'González', '456 Calle Secundaria', '87654321', '30345678902', 'ana@email.com', 1, 1),
+    ('Pedro', 'Sánchez', '789 Avenida Central', '98765432', '40345678903', 'pedro@email.com', 2, 1),
+    ('María', 'López', '101 Plaza Mayor', '23456789', '50345678904', 'maria@email.com', 2, 1),
+    ('Luis', 'Martínez', '202 Calle Estrella', '34567890', '60345678905', 'luis@email.com', 3, 1),
+    ('Laura', 'Rodríguez', '303 Avenida del Sol', '45678901', '70345678906', 'laura@email.com', 3, 1);
 
 /*Para eliminar la database*/
 DROP DATABASE db_proyecto_final
