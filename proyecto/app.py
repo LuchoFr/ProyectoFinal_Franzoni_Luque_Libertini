@@ -8,6 +8,7 @@ from flask_cors import CORS
 from backend.product import Product
 from backend.service import Service
 from backend.client import Client
+from collections import defaultdict
 
 
 app = Flask(__name__)
@@ -700,6 +701,166 @@ def get_bill_details_by_user(userID):
             })
 
         return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+#GET ranking de productos
+@app.route('/rankingProduct/<int:userID>', methods=['GET'])
+@token_required
+def get_bill_details_rankingProduct(userID):
+    try:
+        # Define la consulta SQL con INNER JOIN para obtener datos relacionados y filtrar por user_id
+        cur = mysql.connection.cursor()
+        cur.execute("""
+                    SELECT BillDetails.id, BillDetails.billID, BillDetails.productID, BillDetails.serviceID, BillDetails.productQuantity,
+                    Products.name AS productName, Services.name AS serviceName,
+                    Bills.date AS billDate, Bills.price AS billPrice,
+                    Clients.name AS clientName, Clients.lastName AS clientLastName, Clients.address AS clientAddress,
+                    Clients.dni AS clientDNI, Clients.cuit AS clientCUIT, Clients.email AS clientEmail
+                    FROM BillDetails
+                    LEFT JOIN Products ON BillDetails.productID = Products.id
+                    LEFT JOIN Services ON BillDetails.serviceID = Services.id
+                    LEFT JOIN Bills ON BillDetails.billID = Bills.id
+                    LEFT JOIN Clients ON Bills.clientID = Clients.id
+                    WHERE Bills.userID = %s
+                    """, (userID,))
+
+        data = cur.fetchall()
+        cur.close()
+
+        # Formatea los resultados en un formato JSON
+        result = []
+        for item in data:
+            result.append({
+                'id': item[0],  # Índice 0: id
+                'billID': item[1],  # Índice 1: billID
+                'productID': item[2],  # Índice 2: productID
+                'serviceID': item[3],  # Índice 3: serviceID
+                'productQuantity': item[4],  # Índice 4: productQuantity
+                'productName': item[5],  # Índice 5: productName
+                'serviceName': item[6],  # Índice 6: serviceName
+                'billDate': item[7],  # Índice 7: billDate
+                'billPrice': item[8],  # Índice 8: billPrice
+                'clientName': item[9],  # Índice 9: clientName
+                'clientLastName': item[10],  # Índice 10: clientLastName
+                'clientAddress': item[11],  # Índice 11: clientAddress
+                'clientDNI': item[12],  # Índice 12: clientDNI
+                'clientCUIT': item[13],  # Índice 13: clientCUIT
+                'clientEmail': item[14]  # Índice 14: clientEmail
+            })
+        
+
+        # Usaremos un diccionario para rastrear la cantidad total por 'productID'
+        product_quantities = defaultdict(int)
+
+        # Recorre la lista de detalles de la factura 'result' y suma las cantidades por 'productID'
+        for item in result:
+            product_id = item['productID']
+            if item['productQuantity'] is None:
+                product_quantity=0
+            else:
+                product_quantity = item['productQuantity']
+            product_quantities[product_id] += product_quantity
+
+        # Crea la lista de diccionarios con 'productID', 'productName' y 'cantidad'
+        product_summary = []
+        for item in result:
+            product_id = item['productID']
+            product_name = item['productName']
+            total_quantity = product_quantities[product_id]
+
+            product_summary.append({
+                'productID': product_id,
+                'productName': product_name,
+                'cantidad': total_quantity
+            })
+
+        product_summary = [item for item in product_summary if item["productID"] is not None]
+        return jsonify(product_summary), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+#GET ranking de servicios
+@app.route('/rankingService/<int:userID>', methods=['GET'])
+@token_required
+def get_bill_details_rankingService(userID):
+    try:
+        # Define la consulta SQL con INNER JOIN para obtener datos relacionados y filtrar por user_id
+        cur = mysql.connection.cursor()
+        cur.execute("""
+                    SELECT BillDetails.id, BillDetails.billID, BillDetails.productID, BillDetails.serviceID, BillDetails.productQuantity,
+                    Products.name AS productName, Services.name AS serviceName,
+                    Bills.date AS billDate, Bills.price AS billPrice,
+                    Clients.name AS clientName, Clients.lastName AS clientLastName, Clients.address AS clientAddress,
+                    Clients.dni AS clientDNI, Clients.cuit AS clientCUIT, Clients.email AS clientEmail
+                    FROM BillDetails
+                    LEFT JOIN Products ON BillDetails.productID = Products.id
+                    LEFT JOIN Services ON BillDetails.serviceID = Services.id
+                    LEFT JOIN Bills ON BillDetails.billID = Bills.id
+                    LEFT JOIN Clients ON Bills.clientID = Clients.id
+                    WHERE Bills.userID = %s
+                    """, (userID,))
+
+        data = cur.fetchall()
+        cur.close()
+
+        # Formatea los resultados en un formato JSON
+        result = []
+        for item in data:
+            result.append({
+                'id': item[0],  # Índice 0: id
+                'billID': item[1],  # Índice 1: billID
+                'productID': item[2],  # Índice 2: productID
+                'serviceID': item[3],  # Índice 3: serviceID
+                'productQuantity': item[4],  # Índice 4: productQuantity
+                'productName': item[5],  # Índice 5: productName
+                'serviceName': item[6],  # Índice 6: serviceName
+                'billDate': item[7],  # Índice 7: billDate
+                'billPrice': item[8],  # Índice 8: billPrice
+                'clientName': item[9],  # Índice 9: clientName
+                'clientLastName': item[10],  # Índice 10: clientLastName
+                'clientAddress': item[11],  # Índice 11: clientAddress
+                'clientDNI': item[12],  # Índice 12: clientDNI
+                'clientCUIT': item[13],  # Índice 13: clientCUIT
+                'clientEmail': item[14]  # Índice 14: clientEmail
+            })
+        
+
+        # Usaremos un diccionario para rastrear la cantidad total por 'serviceID'
+        service_quantities = defaultdict(int)
+
+        # Recorre la lista de detalles de la factura 'result' y suma las cantidades por 'serviceID'
+        for item in result:
+            service_id = item['serviceID']
+            if item['serviceID'] is None:
+                service_quantity=0
+            else:
+                service_quantity = 1
+            service_quantities[service_id] += service_quantity
+
+        # Usaremos un conjunto para rastrear serviceID únicos
+        unique_service_ids = set()
+
+        # Crea la lista de diccionarios con 'serviceID', 'serviceName' y 'cantidad'
+        service_summary = []
+        for item in result:
+            service_id = item['serviceID']
+            if service_id is not None and service_id not in unique_service_ids:
+                total_quantity = service_quantities[service_id]
+                # Agrega service_id al conjunto para evitar duplicados
+                unique_service_ids.add(service_id)
+
+                service_summary.append({
+                    'serviceID': service_id,
+                    'serviceName': item['serviceName'],
+                    'cantidad': total_quantity
+                })
+
+
+        service_summary = [item for item in service_summary if item["serviceID"] is not None]
+        return jsonify(service_summary), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
