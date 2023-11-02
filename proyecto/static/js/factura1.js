@@ -539,10 +539,13 @@ function agregarServicio() {
             const precio = serviciosDict[servicioSeleccionado].price;
 
             
-            // Verifica si el servicio ya está en la factura
             const serviciosYaAgregados = Array.from(document.querySelectorAll("#facturaTable tbody tr td:first-child"));
-            serviciosYaAgregados.map(cell => cell.textContent);
-
+            const serviciosAgregadosNombres = serviciosYaAgregados.map(cell => cell.textContent);
+    
+            if (serviciosAgregadosNombres.includes(servicioSeleccionado)) {
+                alert("Este servicio ya ha sido agregado a la factura.");
+                return;
+            }
             // Calcula el total del servicio (siempre con cantidad 1)
             const total = precio * 1;
 
