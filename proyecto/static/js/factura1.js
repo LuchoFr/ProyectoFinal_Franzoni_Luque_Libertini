@@ -538,13 +538,18 @@ function agregarServicio() {
         if (servicioSeleccionado !== "Haga click para desplegar y seleccionar un servicio") {
             const precio = serviciosDict[servicioSeleccionado].price;
 
+            
+            // Verifica si el servicio ya está en la factura
+            const serviciosYaAgregados = Array.from(document.querySelectorAll("#facturaTable tbody tr td:first-child"));
+            serviciosYaAgregados.map(cell => cell.textContent);
+
             // Calcula el total del servicio (siempre con cantidad 1)
             const total = precio * 1;
 
             // Agrego al diccionario De servicios y productos para despues enviar
             const servicioID = serviciosDict[servicioSeleccionado].id;
             prodServVendidos[`Serv:${servicioID}`] = { serviceID : servicioID };
-        
+            
             // Crea una nueva fila de tabla para el servicio
             const newRow = document.createElement("tr");
 
@@ -571,6 +576,8 @@ function agregarServicio() {
             const tbody = facturaTable.querySelector("tbody");
             tbody.appendChild(newRow);
 
+            servicioSelect.querySelector(`option[value="${servicioSeleccionado}"]`).disabled = true;
+
             // Limpia el formulario de servicio
             servicioSelect.selectedIndex = 0;
 
@@ -579,6 +586,7 @@ function agregarServicio() {
             const totalFacturaModificar = document.getElementById("totalFacturaSpan");
             totalFacturaModificar.textContent = totalFactura.toFixed(2);
             seAgregoElemento = true;
+            precioInput.value = "";
 
         } else {
             alert("Debe seleccionar un servicio antes de agregarlo a la factura.");
