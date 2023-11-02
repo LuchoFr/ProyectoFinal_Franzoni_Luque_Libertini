@@ -1083,3 +1083,278 @@ function logout() {
     // Redirige al usuario a la página de inicio de sesión
     window.location.href = 'login.html'; // Reemplaza con la URL real de tu página de inicio de sesión.
 }
+
+
+
+/////////////////////////////////////////////////PRODUCTOS////////////////////////////////////////////
+// Coloca aquí el código Fetch para obtener y agregar productos
+function rankingProducts() {
+
+    //recuperar credenciales para validar el acceso
+    const requestOptions = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-access-token': token,
+            'user-id': userID
+        }
+    }
+
+    //seleccionamos div del main principal
+    const contenidoPrincipal = document.querySelector('.contenido-principal');
+    contenidoPrincipal.innerHTML = '';
+
+    // Actualizar el título h2 creando el elemento 
+    //YA QUE DEJO DE ANDAR DE UNA SIMPLE FORMA QUE ERA SOLO CAMBIAR EL TEXT CONTENT
+    const h2Principal = document.createElement('h2');
+    h2Principal.id = 'h2-principal';
+    h2Principal.textContent = 'Ranking de Productos';
+    contenidoPrincipal.appendChild(h2Principal);
+
+    // Elimino tabla existente si ya se creó anteriormente asi no la repite
+    const tablaExistente = contenidoPrincipal.querySelector('#table-products');
+    if (tablaExistente) {
+        contenidoPrincipal.removeChild(tablaExistente);
+    }
+
+
+    fetch(`http://127.0.0.1:4500/rankingProduct/${userID}`, requestOptions)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+
+            //creacion de tabla
+            const table = document.createElement('table');
+            table.id = "table-products";
+            table.className = "table-products";
+
+
+            //creacion de encabezado (thead)
+            const thead = document.createElement("thead");
+            const headerRow = document.createElement("tr");
+            headerRow.innerHTML = `
+            <th>Id</th>
+            <th>Nombre</th>
+            <th>Cantidad Vendida</th>
+            
+        `;
+
+            //agrego los encabezados
+            thead.appendChild(headerRow);
+
+            // Crear el cuerpo (tbody)
+            const tbody = document.createElement("tbody");
+            tbody.id = "list-products";
+
+            //cargamos productos a la tabla
+            data.forEach(producto => {
+                const fila = document.createElement('tr')
+
+                //Me quedo con la fila
+                fila.id = producto.id
+
+                //agrego clases a los botones para activar y desactivar la edicion
+                fila.innerHTML = `
+                    <td>${producto.productID}</td>
+                    <td>${producto.productName}</td>
+                    <td>${producto.cantidad}</td>
+                            
+                `;
+                tbody.appendChild(fila);
+
+            });
+            // Aagrego el encabezado y el cuerpo a la tabla
+            table.appendChild(thead);
+            table.appendChild(tbody);
+
+            // agregar la tabla al elemento "contenido-principal"
+            contenidoPrincipal.appendChild(table);
+
+        })
+
+}
+
+
+
+/////////////////////////////////////////////////PRODUCTOS////////////////////////////////////////////
+// Coloca aquí el código Fetch para obtener y agregar productos
+function rankingServices() {
+
+    //recuperar credenciales para validar el acceso
+    const requestOptions = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-access-token': token,
+            'user-id': userID
+        }
+    }
+
+    //seleccionamos div del main principal
+    const contenidoPrincipal = document.querySelector('.contenido-principal');
+    contenidoPrincipal.innerHTML = '';
+
+    // Actualizar el título h2 creando el elemento 
+    //YA QUE DEJO DE ANDAR DE UNA SIMPLE FORMA QUE ERA SOLO CAMBIAR EL TEXT CONTENT
+    const h2Principal = document.createElement('h2');
+    h2Principal.id = 'h2-principal';
+    h2Principal.textContent = 'Ranking de Servicios';
+    contenidoPrincipal.appendChild(h2Principal);
+
+    // Elimino tabla existente si ya se creó anteriormente asi no la repite
+    const tablaExistente = contenidoPrincipal.querySelector('#table-products');
+    if (tablaExistente) {
+        contenidoPrincipal.removeChild(tablaExistente);
+    }
+
+
+    fetch(`http://127.0.0.1:4500/rankingService/${userID}`, requestOptions)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+
+            //creacion de tabla
+            const table = document.createElement('table');
+            table.id = "table-products";
+            table.className = "table-products";
+
+
+            //creacion de encabezado (thead)
+            const thead = document.createElement("thead");
+            const headerRow = document.createElement("tr");
+            headerRow.innerHTML = `
+            <th>Id</th>
+            <th>Nombre</th>
+            <th>Cantidad Vendida</th>
+            
+        `;
+
+            //agrego los encabezados
+            thead.appendChild(headerRow);
+
+            // Crear el cuerpo (tbody)
+            const tbody = document.createElement("tbody");
+            tbody.id = "list-products";
+
+            //cargamos productos a la tabla
+            data.forEach(producto => {
+                const fila = document.createElement('tr')
+
+                //Me quedo con la fila
+                fila.id = producto.id
+
+                //agrego clases a los botones para activar y desactivar la edicion
+                fila.innerHTML = `
+                    <td>${producto.serviceID}</td>
+                    <td>${producto.serviceName}</td>
+                    <td>${producto.cantidad}</td>
+                            
+                `;
+                tbody.appendChild(fila);
+
+            });
+            // Aagrego el encabezado y el cuerpo a la tabla
+            table.appendChild(thead);
+            table.appendChild(tbody);
+
+            // agregar la tabla al elemento "contenido-principal"
+            contenidoPrincipal.appendChild(table);
+
+        })
+
+}
+
+
+
+/////////////////////////////////////////////////PRODUCTOS////////////////////////////////////////////
+// Coloca aquí el código Fetch para obtener y agregar productos
+function rankingCliente() {
+
+    //recuperar credenciales para validar el acceso
+    const requestOptions = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-access-token': token,
+            'user-id': userID
+        }
+    }
+
+    //seleccionamos div del main principal
+    const contenidoPrincipal = document.querySelector('.contenido-principal');
+    contenidoPrincipal.innerHTML = '';
+
+    // Actualizar el título h2 creando el elemento 
+    //YA QUE DEJO DE ANDAR DE UNA SIMPLE FORMA QUE ERA SOLO CAMBIAR EL TEXT CONTENT
+    const h2Principal = document.createElement('h2');
+    h2Principal.id = 'h2-principal';
+    h2Principal.textContent = 'Ranking de Clientes';
+    contenidoPrincipal.appendChild(h2Principal);
+
+    // Elimino tabla existente si ya se creó anteriormente asi no la repite
+    const tablaExistente = contenidoPrincipal.querySelector('#table-products');
+    if (tablaExistente) {
+        contenidoPrincipal.removeChild(tablaExistente);
+    }
+
+
+    fetch(`http://127.0.0.1:4500/rankingCliente/${userID}`, requestOptions)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+
+            //creacion de tabla
+            const table = document.createElement('table');
+            table.id = "table-products";
+            table.className = "table-products";
+
+
+            //creacion de encabezado (thead)
+            const thead = document.createElement("thead");
+            const headerRow = document.createElement("tr");
+            headerRow.innerHTML = `
+            <th>Id</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Cuit</th>
+            <th>Email</th>
+            <th>Total Comprado</th>
+            
+        `;
+
+            //agrego los encabezados
+            thead.appendChild(headerRow);
+
+            // Crear el cuerpo (tbody)
+            const tbody = document.createElement("tbody");
+            tbody.id = "list-products";
+
+            //cargamos productos a la tabla
+            data.forEach(producto => {
+                const fila = document.createElement('tr')
+
+                //Me quedo con la fila
+                fila.id = producto.id
+
+                //agrego clases a los botones para activar y desactivar la edicion
+                fila.innerHTML = `
+                    <td>${producto.clientID}</td>
+                    <td>${producto.clientName}</td>
+                    <td>${producto.clientLastName}</td>
+                    <td>${producto.clientCUIT}</td>
+                    <td>${producto.clientEmail}</td>
+                    <td>${producto.totalSpent}</td>
+                `;
+                tbody.appendChild(fila);
+
+            });
+            // Aagrego el encabezado y el cuerpo a la tabla
+            table.appendChild(thead);
+            table.appendChild(tbody);
+
+            // agregar la tabla al elemento "contenido-principal"
+            contenidoPrincipal.appendChild(table);
+
+        })
+
+}
