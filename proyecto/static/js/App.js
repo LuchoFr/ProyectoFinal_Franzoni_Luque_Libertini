@@ -118,9 +118,21 @@ function cargarProductos() {
             //cargamos productos a la tabla
             data.forEach(producto => {
 
-                
+
                 const fila = document.createElement('tr')
-            
+                //Los colores del STOCK
+                const stock = producto.stock;
+
+                // Determinar la clase CSS para el campo "Stock" según el valor
+                let stockClass = '';
+                if (stock < 10) {
+                    stockClass = 'stock-low'; // Clase CSS para stock bajo (rojo)
+                } else if (stock > 60) {
+                    stockClass = 'stock-high'; // Clase CSS para stock alto (verde)
+                } else if (stock >= 10 && stock <= 30) {
+                    stockClass = 'stock-medium'; // Clase CSS para stock medio (amarillo)
+                }
+
 
                 //Me quedo con la fila
                 fila.id = producto.id
@@ -131,7 +143,7 @@ function cargarProductos() {
                     <td class="edit-field">${producto.name}</td>
                     <td class="edit-field">${producto.description}</td>
                     <td class="edit-field">${producto.price}</td>
-                    <td class="edit-field">${producto.stock}</td>
+                    <td class="edit-field ${stockClass}">${producto.stock}</td>
                     <td>
                                 <button onclick='editar(${producto.id},${userID})' class="small-button rounded-button edit-button">Editar</button>
                             </td>

@@ -453,3 +453,21 @@ select[name="Clientes"] {
     color: var(--color-info-dark);
 }
 
+
+
+/* LOS COLORES DEL STOCK */
+.stock-low {
+    color: red;
+    font-weight: bold;
+    
+}
+
+.stock-medium {
+    color: yellow;
+    font-weight: bold;
+}
+
+.stock-high {
+    color: green;
+    font-weight: bold;
+}
