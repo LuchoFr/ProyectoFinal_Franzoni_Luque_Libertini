@@ -629,7 +629,7 @@ def get_bills_with_client_names(userID):
                 'total': float(item[2]),  # Convierte el precio a decimal
                 'client_name': item[3]
             })
-
+        result = sorted(result, key=lambda x: x['date'], reverse=True)
         return jsonify(result), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
@@ -928,6 +928,7 @@ def get_bill_details_rankingCliente(userID):
 
         for item in result:
             # Obtén la información del cliente
+            client_id = item['id']
             client_name = item['clientName']
             client_last_name = item['clientLastName']
             client_address = item['clientAddress']
@@ -938,6 +939,7 @@ def get_bill_details_rankingCliente(userID):
     
             # Combina la información del cliente y su gasto total en un diccionario
             client_info = {
+                'clientID': client_id,
                 'clientName': client_name,
                 'clientLastName': client_last_name,
                 'clientAddress': client_address,
