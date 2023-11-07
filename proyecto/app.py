@@ -604,6 +604,37 @@ def agregar_factura():
         response.status_code = 500
         return response
 
+
+@app.route('/bills/<int:userID>', methods=['GET'])
+def get_bills_with_client_names(userID):
+    try:
+        # Realiza la consulta utilizando un INNER JOIN para obtener los datos de factura y el nombre del cliente.
+        cur = mysql.connection.cursor()
+        cur.execute('''
+            SELECT Bills.id, Bills.date, Bills.price, Clients.name
+            FROM Bills
+            INNER JOIN Clients ON Bills.clientID = Clients.id
+            WHERE Bills.userID = %s
+        ''', (userID,))
+
+        data=cur.fetchall()
+        cur.close()
+
+        # Formatea los resultados en un formato JSON
+        result = []
+        for item in data:
+            result.append({
+                'id': item[0],
+                'date': item[1].strftime('%Y-%m-%d'),  # Formatea la fecha a cadena
+                'total': float(item[2]),  # Convierte el precio a decimal
+                'client_name': item[3]
+            })
+
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
 ###Metodo para obtener ultima factura agregada por usuario
 @app.route('/bills/<int:userID>/ultima', methods=['GET'])
 @token_required
@@ -756,6 +787,7 @@ def get_bill_details_rankingProduct(userID):
             item['cantidad'] = product_quantities[item['productID']]
 
         product_summary = [item for item in product_summary if item['cantidad'] > 0]
+        product_summary = sorted(product_summary, key=lambda x: x['cantidad'], reverse=True)
         return jsonify(product_summary), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
@@ -839,6 +871,7 @@ def get_bill_details_rankingService(userID):
 
 
         service_summary = [item for item in service_summary if item["serviceID"] is not None]
+        service_summary = sorted(service_summary, key=lambda x: x['cantidad'], reverse=True)
         return jsonify(service_summary), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
@@ -852,19 +885,17 @@ def get_bill_details_rankingCliente(userID):
         # Define la consulta SQL con INNER JOIN para obtener datos relacionados y filtrar por user_id
         cur = mysql.connection.cursor()
         cur.execute("""
-                    SELECT 
-                        Clients.id AS clientID,
-                        Clients.name AS clientName, 
-                        Clients.lastName AS clientLastName, 
-                        Clients.address AS clientAddress,
-                        Clients.dni AS clientDNI, 
-                        Clients.cuit AS clientCUIT, 
-                        Clients.email AS clientEmail,
-                        SUM(Bills.price) AS totalSpent
-                    FROM Clients
-                    LEFT JOIN Bills ON Clients.id = Bills.clientID
+                    SELECT BillDetails.id, BillDetails.billID, BillDetails.productID, BillDetails.serviceID, BillDetails.productQuantity,
+                    Products.name AS productName, Services.name AS serviceName,
+                    Bills.date AS billDate, Bills.price AS billPrice,
+                    Clients.name AS clientName, Clients.lastName AS clientLastName, Clients.address AS clientAddress,
+                    Clients.dni AS clientDNI, Clients.cuit AS clientCUIT, Clients.email AS clientEmail
+                    FROM BillDetails
+                    LEFT JOIN Products ON BillDetails.productID = Products.id
+                    LEFT JOIN Services ON BillDetails.serviceID = Services.id
+                    LEFT JOIN Bills ON BillDetails.billID = Bills.id
+                    LEFT JOIN Clients ON Bills.clientID = Clients.id
                     WHERE Bills.userID = %s
-                    GROUP BY clientID, clientName, clientLastName, clientAddress, clientDNI, clientCUIT, clientEmail
                     """, (userID,))
 
         data = cur.fetchall()
@@ -874,17 +905,60 @@ def get_bill_details_rankingCliente(userID):
         result = []
         for item in data:
             result.append({
-                'clientID': item[0],
-                'clientName': item[1],
-                'clientLastName': item[2],
-                'clientAddress': item[3],
-                'clientDNI': item[4],
-                'clientCUIT': item[5],
-                'clientEmail': item[6],
-                'totalSpent': item[7]
+                'id': item[0],  # Índice 0: id
+                'billID': item[1],  # Índice 1: billID
+                'productID': item[2],  # Índice 2: productID
+                'serviceID': item[3],  # Índice 3: serviceID
+                'productQuantity': item[4],  # Índice 4: productQuantity
+                'productName': item[5],  # Índice 5: productName
+                'serviceName': item[6],  # Índice 6: serviceName
+                'billDate': item[7],  # Índice 7: billDate
+                'billPrice': item[8],  # Índice 8: billPrice
+                'clientName': item[9],  # Índice 9: clientName
+                'clientLastName': item[10],  # Índice 10: clientLastName
+                'clientAddress': item[11],  # Índice 11: clientAddress
+                'clientDNI': item[12],  # Índice 12: clientDNI
+                'clientCUIT': item[13],  # Índice 13: clientCUIT
+                'clientEmail': item[14]  # Índice 14: clientEmail
             })
+        
 
-        return jsonify(result), 200
+        # Usaremos un diccionario para rastrear el gasto total por cliente
+        client_total_spent = {}
+
+        for item in result:
+            # Obtén la información del cliente
+            client_name = item['clientName']
+            client_last_name = item['clientLastName']
+            client_address = item['clientAddress']
+            client_dni = item['clientDNI']
+            client_cuit = item['clientCUIT']
+            client_email = item['clientEmail']
+            total_spent = item['billPrice']
+    
+            # Combina la información del cliente y su gasto total en un diccionario
+            client_info = {
+                'clientName': client_name,
+                'clientLastName': client_last_name,
+                'clientAddress': client_address,
+                'clientDNI': client_dni,
+                'clientCUIT': client_cuit,
+                'clientEmail': client_email,
+                'totalSpent': total_spent
+            }
+        
+            # Si el cliente ya existe en el diccionario 'client_total_spent', agrega su gasto
+            if client_name in client_total_spent:
+                client_total_spent[client_name]['totalSpent'] += total_spent
+            else:
+                # Si el cliente no existe, crea una nueva entrada
+                client_total_spent[client_name] = client_info
+
+        # Convierte el diccionario en una lista de diccionarios
+        result_client_total_spent = list(client_total_spent.values())
+        result_client_total_spent = sorted(result_client_total_spent, key=lambda x: x['totalSpent'], reverse=True)
+        
+        return jsonify(result_client_total_spent), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
