@@ -129,6 +129,7 @@ b{
 
 aside{
     height: 100vh;
+
 }
 
 aside .top{
@@ -453,3 +454,71 @@ select[name="Clientes"] {
     color: var(--color-info-dark);
 }
 
+#hamburger-menu {
+    display: none; /* Lo oculta inicialmente */
+}
+
+/* Media query para mostrar el botón solo en pantallas pequeñas */
+@media (max-width: 768px) {
+    #hamburger-menu {
+        display: block; /* Lo hace visible en pantallas más pequeñas */
+    }
+    aside {
+        width: 200px; /* Ajusta el ancho en pantallas más pequeñas */
+        position: fixed;
+        top: 0;
+        left: -250px; /* Oculta el menú fuera del área visible */
+        width: 250px;
+        height: 100%;
+        background: #fff;
+        transition: left 0.3s ease;
+        z-index: 1; /* Asegura que el menú esté sobre el contenido */
+    }
+
+    .container {
+        display: grid;
+        margin: auto;
+        grid-template-columns:1fr;
+
+
+    }
+    main .contenido-principal table {
+        width: calc(100vw - 40px); /* Reduciendo el ancho por el espacio de padding y márgenes */
+        margin: 0 auto; /* Centrar la tabla en la pantalla */
+
+      }
+
+    #table-products.table-products th:nth-child(3),
+    #table-products.table-products td:nth-child(3) {
+        display: none;
+    }
+    
+    #table-products.table-clients th:nth-child(4),
+    #table-products.table-clients td:nth-child(4) {
+        display: none;
+    }
+    #table-products.table-clients th:nth-child(6),
+    #table-products.table-clients td:nth-child(6) {
+        display: none;
+    }
+    #table-products.table-clients th:nth-child(7),
+    #table-products.table-clients td:nth-child(7) {
+        display: none;
+    }
+
+    #table-products.table- th:nth-child(7),
+    #table-products.table-clients td:nth-child(7) {
+        display: none;
+    }
+
+
+    #table-products.table-products-rankclients th:nth-child(1),
+    #table-products.table-products-rankclients td:nth-child(1) {
+        display: none;
+    }
+    
+    #table-products.table-products-rankclients th:nth-child(5),
+    #table-products.table-products-rankclients td:nth-child(5) {
+        display: none;
+    }
+}

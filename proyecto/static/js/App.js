@@ -769,7 +769,7 @@ function cargarClientes() {
             //creacion de tabla
             const table = document.createElement('table');
             table.id = "table-products";
-            table.className = "table-products";
+            table.className = "table-clients";
 
             //creacion de encabezado (thead)
             const thead = document.createElement("thead");
@@ -1126,7 +1126,7 @@ function rankingProducts() {
             //creacion de tabla
             const table = document.createElement('table');
             table.id = "table-products";
-            table.className = "table-products";
+            table.className = "table-products-ranking";
 
 
             //creacion de encabezado (thead)
@@ -1216,7 +1216,7 @@ function rankingServices() {
             //creacion de tabla
             const table = document.createElement('table');
             table.id = "table-products";
-            table.className = "table-products";
+            table.className = "table-products-ranking";
 
 
             //creacion de encabezado (thead)
@@ -1306,7 +1306,7 @@ function rankingCliente() {
             //creacion de tabla
             const table = document.createElement('table');
             table.id = "table-products";
-            table.className = "table-products";
+            table.className = "table-products-rankclients";
 
 
             //creacion de encabezado (thead)
@@ -1358,3 +1358,18 @@ function rankingCliente() {
         })
 
 }
+
+
+const hamburgerMenu = document.getElementById('hamburger-menu');
+const sidebar = document.querySelector('aside');
+
+hamburgerMenu.addEventListener('click', function() {
+    sidebar.style.left = (sidebar.style.left === '0px') ? '-250px' : '0px';
+});
+
+// Cerrar menú deslizante al hacer clic en enlaces
+document.querySelectorAll('aside a').forEach(function(link) {
+    link.addEventListener('click', function() {
+        sidebar.style.left = '-250px';
+    });
+});
