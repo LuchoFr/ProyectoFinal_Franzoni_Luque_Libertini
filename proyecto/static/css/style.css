@@ -454,7 +454,24 @@ select[name="Clientes"] {
     color: var(--color-info-dark);
 }
 
-#hamburger-menu {
+
+
+/* LOS COLORES DEL STOCK */
+.stock-low {
+    color: red;
+    font-weight: bold;
+    
+}
+
+.stock-medium {
+    color: yellow;
+    font-weight: bold;
+}
+
+.stock-high {
+    color: green;
+    font-weight: bold;
+}#hamburger-menu {
     display: none; /* Lo oculta inicialmente */
 }
 

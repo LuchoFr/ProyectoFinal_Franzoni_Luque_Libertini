@@ -118,9 +118,21 @@ function cargarProductos() {
             //cargamos productos a la tabla
             data.forEach(producto => {
 
-                
+
                 const fila = document.createElement('tr')
-            
+                //Los colores del STOCK
+                const stock = producto.stock;
+
+                // Determinar la clase CSS para el campo "Stock" según el valor
+                let stockClass = '';
+                if (stock < 10) {
+                    stockClass = 'stock-low'; // Clase CSS para stock bajo (rojo)
+                } else if (stock > 60) {
+                    stockClass = 'stock-high'; // Clase CSS para stock alto (verde)
+                } else if (stock >= 10 && stock <= 30) {
+                    stockClass = 'stock-medium'; // Clase CSS para stock medio (amarillo)
+                }
+
 
                 //Me quedo con la fila
                 fila.id = producto.id
@@ -131,7 +143,7 @@ function cargarProductos() {
                     <td class="edit-field">${producto.name}</td>
                     <td class="edit-field">${producto.description}</td>
                     <td class="edit-field">${producto.price}</td>
-                    <td class="edit-field">${producto.stock}</td>
+                    <td class="edit-field ${stockClass}">${producto.stock}</td>
                     <td>
                                 <button onclick='editar(${producto.id},${userID})' class="small-button rounded-button edit-button">Editar</button>
                             </td>
@@ -1360,16 +1372,95 @@ function rankingCliente() {
 }
 
 
-const hamburgerMenu = document.getElementById('hamburger-menu');
-const sidebar = document.querySelector('aside');
 
-hamburgerMenu.addEventListener('click', function() {
-    sidebar.style.left = (sidebar.style.left === '0px') ? '-250px' : '0px';
-});
+/////////////////////////////////////////////////HISTORIAL DE VENTAS////////////////////////////////////////////
+// Coloca aquí el código Fetch para obtener HISTORIAL
+function historialVentas() {
 
-// Cerrar menú deslizante al hacer clic en enlaces
-document.querySelectorAll('aside a').forEach(function(link) {
-    link.addEventListener('click', function() {
-        sidebar.style.left = '-250px';
-    });
-});
+    //recuperar credenciales para validar el acceso
+    const requestOptions = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-access-token': token,
+            'user-id': userID
+        }
+    }
+
+    //seleccionamos div del main principal
+    const contenidoPrincipal = document.querySelector('.contenido-principal');
+    contenidoPrincipal.innerHTML = '';
+
+    // Actualizar el título h2 creando el elemento 
+    //YA QUE DEJO DE ANDAR DE UNA SIMPLE FORMA QUE ERA SOLO CAMBIAR EL TEXT CONTENT
+    const h2Principal = document.createElement('h2');
+    h2Principal.id = 'h2-principal';
+    h2Principal.textContent = 'Historial de Ventas';
+    contenidoPrincipal.appendChild(h2Principal);
+
+    // Elimino tabla existente si ya se creó anteriormente asi no la repite
+    const tablaExistente = contenidoPrincipal.querySelector('#table-products');
+    if (tablaExistente) {
+        contenidoPrincipal.removeChild(tablaExistente);
+    }
+
+
+    fetch(`http://127.0.0.1:4500//bills/${userID}`, requestOptions)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+
+            //creacion de tabla
+            const table = document.createElement('table');
+            table.id = "table-products";
+            table.className = "table-products";
+
+
+            //creacion de encabezado (thead)
+            const thead = document.createElement("thead");
+            const headerRow = document.createElement("tr");
+            headerRow.innerHTML = `
+            <th>Id</th>
+            <th>Fecha</th>
+            <th>Cliente</th>
+            <th>Total</th>
+
+        `;
+
+            //agrego los encabezados
+            thead.appendChild(headerRow);
+
+            // Crear el cuerpo (tbody)
+            const tbody = document.createElement("tbody");
+            tbody.id = "list-products";
+
+            //cargamos productos a la tabla
+            data.forEach(producto => {
+                const fila = document.createElement('tr')
+
+                //Me quedo con la fila
+                fila.id = producto.id
+
+                //agrego clases a los botones para activar y desactivar la edicion
+                fila.innerHTML = `
+                    <td>${producto.id}</td>
+                    <td>${producto.date}</td>
+                    <td>${producto.client_name}</td>
+                    <td>${producto.total}</td>
+  
+                `;
+                tbody.appendChild(fila);
+
+            });
+            // Aagrego el encabezado y el cuerpo a la tabla
+            table.appendChild(thead);
+            table.appendChild(tbody);
+
+            // agregar la tabla al elemento "contenido-principal"
+            contenidoPrincipal.appendChild(table);
+
+        })
+
+}
+
+
