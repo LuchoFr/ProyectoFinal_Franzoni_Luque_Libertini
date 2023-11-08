@@ -479,6 +479,7 @@ select[name="Clientes"] {
 @media (max-width: 768px) {
     #hamburger-menu {
         display: block; /* Lo hace visible en pantallas más pequeñas */
+        float: right;
     }
     aside {
         width: 200px; /* Ajusta el ancho en pantallas más pequeñas */
@@ -537,5 +538,15 @@ select[name="Clientes"] {
     #table-products.table-products-rankclients th:nth-child(5),
     #table-products.table-products-rankclients td:nth-child(5) {
         display: none;
+    }
+
+    #menuClientes {
+        width: 100%; /* Asegura que el menú desplegable ocupe el 100% del ancho disponible */
+        max-width: 100%; /* Define el ancho máximo del menú */
+        word-wrap: break-word; /* Hace que el texto se divida en múltiples líneas si no cabe en una */
+    }
+    #menuClientes li {
+        width: 60%; /* Asegura que los elementos de la lista ocupen todo el ancho del menú */
+        display: block; /* Asegura que cada elemento de la lista se muestre en su propia línea */
     }
 }

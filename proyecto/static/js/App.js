@@ -1464,3 +1464,17 @@ function historialVentas() {
 }
 
 
+
+const hamburgerMenu = document.getElementById('hamburger-menu');
+const sidebar = document.querySelector('aside');
+
+hamburgerMenu.addEventListener('click', function() {
+    sidebar.style.left = (sidebar.style.left === '0px') ? '-250px' : '0px';
+});
+
+// Cerrar menú deslizante al hacer clic en enlaces
+document.querySelectorAll('aside a').forEach(function(link) {
+    link.addEventListener('click', function() {
+        sidebar.style.left = '-250px';
+    });
+});

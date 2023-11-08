@@ -116,7 +116,9 @@ function mostrarClientes() {
         opcion.text = cliente.nombreCompleto;
         clienteSelect.appendChild(opcion);
     });
-
+    
+    // Agregar un ID al menú desplegable de clientes
+    clienteSelect.setAttribute("id", "menuDesplegable");
     // Agrega un botón "Aceptar"
     const aceptarButton = document.createElement("button");
     aceptarButton.textContent = "Aceptar";
@@ -286,7 +288,7 @@ function CargarFormulario() {
         opcion.text = producto;
         productoSelect.appendChild(opcion);
     });
-
+    productoSelect.setAttribute("id", "menuDesplegable");
 
     // Agrega un campo de entrada para el precio
     const precioInput = document.createElement("input");
@@ -496,6 +498,7 @@ function agregarServicio() {
         opcion.text = servicio;
         servicioSelect.appendChild(opcion);
     });
+    servicioSelect.setAttribute("id", "menuDesplegable");
 
     // Agrega un campo de entrada para el precio
     const precioInput = document.createElement("input");
