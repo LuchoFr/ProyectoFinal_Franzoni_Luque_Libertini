@@ -85,7 +85,7 @@ function cargarProductos() {
     }
 
 
-    fetch(`http://127.0.0.1:4500/users/${userID}/products`, requestOptions)
+    fetch(`http://127.0.0.1:4500/users/products/${userID}`, requestOptions)
         .then(response => response.json())
         .then(data => {
             console.log(data);
@@ -252,7 +252,7 @@ function guardarCambios(id, userID) {
     };
 
     // Realizar una solicitud PUT para enviar los datos actualizados al servidor
-    fetch(`http://127.0.0.1:4500/users/${userID}/products/${id}`, {
+    fetch(`http://127.0.0.1:4500/users/products/${userID}/${id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -287,7 +287,7 @@ function eliminar(id, userID) {
 
     if (confirmacion) {
         // Realizar una solicitud DELETE para eliminar el producto
-        fetch(`http://127.0.0.1:4500/users/${userID}/deleteProduct/${id}`, {
+        fetch(`http://127.0.0.1:4500/users/deleteProduct/${userID}/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -377,7 +377,7 @@ function guardarProducto() {
     };
 
 
-    fetch(`http://127.0.0.1:4500/users/${userID}/products`, requestOptions)
+    fetch(`http://127.0.0.1:4500/users/products/${userID}`, requestOptions)
         .then(response => response.json())
         .then(data => {
             // Manejar la respuesta del servidor
@@ -439,7 +439,7 @@ function cargarServicios() {
     }
 
 
-    fetch(`http://127.0.0.1:4500/users/${userID}/services`, requestOptions)
+    fetch(`http://127.0.0.1:4500/users/services/${userID}`, requestOptions)
         .then(response => response.json())
         .then(data => {
             console.log(data);
@@ -581,7 +581,7 @@ function guardarServicio() {
     };
 
 
-    fetch(`http://127.0.0.1:4500/users/${userID}/services`, requestOptions)
+    fetch(`http://127.0.0.1:4500/users/services/${userID}`, requestOptions)
         .then(response => response.json())
         .then(data => {
             // Manejar la respuesta del servidor
@@ -672,7 +672,7 @@ function guardarCambiosServicio(id, userID) {
     };
 
     // Realizar una solicitud PUT para enviar los datos actualizados al servidor
-    fetch(`http://127.0.0.1:4500/users/${userID}/services/${id}`, {
+    fetch(`http://127.0.0.1:4500/users/services/${userID}/${id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -707,7 +707,7 @@ function eliminarServicio(id, userID) {
 
     if (confirmacion) {
         // Realizar una solicitud DELETE para eliminar el servicio
-        fetch(`http://127.0.0.1:4500/users/${userID}/deleteService/${id}`, {
+        fetch(`http://127.0.0.1:4500/users/deleteService/${userID}/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -773,7 +773,7 @@ function cargarClientes() {
     }
 
 
-    fetch(`http://127.0.0.1:4500/users/${userID}/clients`, requestOptions)
+    fetch(`http://127.0.0.1:4500/users/clients/${userID}`, requestOptions)
         .then(response => response.json())
         .then(data => {
             console.log(data);
@@ -931,7 +931,7 @@ function guardarCliente() {
     };
 
 
-    fetch(`http://127.0.0.1:4500/users/${userID}/clients`, requestOptions)
+    fetch(`http://127.0.0.1:4500/users/clients/${userID}`, requestOptions)
         .then(response => response.json())
         .then(data => {
             // Manejar la respuesta del servidor
@@ -1022,7 +1022,7 @@ function guardarCambiosCliente(id, userID) {
     };
 
     // Realizar una solicitud PUT para enviar los datos actualizados al servidor
-    fetch(`http://127.0.0.1:4500/users/${userID}/clients/${id}`, {
+    fetch(`http://127.0.0.1:4500/users/clients/${userID}/${id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -1057,7 +1057,7 @@ function eliminarCliente(id, userID) {
 
     if (confirmacion) {
         // Realizar una solicitud DELETE para eliminar el producto
-        fetch(`http://127.0.0.1:4500/users/${userID}/deleteClient/${id}`, {
+        fetch(`http://127.0.0.1:4500/users/deleteClient/${userID}/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

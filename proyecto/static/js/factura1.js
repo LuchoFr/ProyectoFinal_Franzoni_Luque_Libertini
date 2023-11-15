@@ -29,7 +29,7 @@ const solicitarDatosFactura = () => {
         }
     };
 
-    fetch(`http://127.0.0.1:4500/users/${id}/products`, requestOptions)
+    fetch(`http://127.0.0.1:4500/users/products/${id}`, requestOptions)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Error al realizar la solicitud de productos.');
@@ -42,7 +42,7 @@ const solicitarDatosFactura = () => {
             }));
         })
         .then(() => {
-            return fetch(`http://127.0.0.1:4500/users/${id}/clients`, requestOptions);
+            return fetch(`http://127.0.0.1:4500/users/clients/${id}`, requestOptions);
         })
         .then(response => {
             if (!response.ok) {
@@ -56,7 +56,7 @@ const solicitarDatosFactura = () => {
             }));
         })
         .then(() => {
-            return fetch(`http://127.0.0.1:4500/users/${id}/services`, requestOptions);
+            return fetch(`http://127.0.0.1:4500/users/services/${id}`, requestOptions);
         })
         .then(response => {
             if (!response.ok) {
@@ -637,7 +637,7 @@ function cargarBoleta() {
             },
             body: JSON.stringify(productoListoEnv)
         }
-        fetch('http://127.0.0.1:4500/products/update/stock', requestOptionsStock)
+        fetch('http://127.0.0.1:4500/products/stock', requestOptionsStock)
         .then(response => response.json())
         .then(data => {
             if (data.message === "Stock actualizado correctamente") {
@@ -672,7 +672,7 @@ function cargarBoleta() {
                     }
                 };
                             
-                fetch(`http://127.0.0.1:4500/bills/${userID}/ultima`, requestOptionsUltFactura)
+                fetch(`http://127.0.0.1:4500/bills/ultima/${userID}`, requestOptionsUltFactura)
                 .then(respuestabill => respuestabill.json())
                 .then(infoBill => {
                     //recorro mi diccionario de productos agregados a la factura para darle el numero id de la factura 

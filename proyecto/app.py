@@ -124,7 +124,7 @@ def loggin():
 
 #VER COMENTARIOS DENTRO DE LA FUNCION
 ## GET PRODUCTOS BY USERID
-@app.route('/users/<int:userID>/products', methods=['GET'])
+@app.route('/users/products/<int:userID>', methods=['GET'])
 @token_required
 #@user_resources
 def listar_productos(userID):
@@ -146,7 +146,7 @@ def listar_productos(userID):
 
 #VER COMENTARIOS DENTRO DE LA FUNCION
 ## GET services BY ID USER
-@app.route('/users/<int:userID>/services', methods=['GET'])
+@app.route('/users/services/<int:userID>', methods=['GET'])
 @token_required
 #@user_resources
 def listar_servicios(userID):
@@ -167,7 +167,7 @@ def listar_servicios(userID):
 
 
 #POST PRODUCT 
-@app.route('/users/<int:userID>/products', methods=['POST'])
+@app.route('/users/products/<int:userID>', methods=['POST'])
 @token_required
 def create_product(userID):
     if request.method == 'POST':
@@ -202,7 +202,7 @@ def create_product(userID):
 
 
 #POST SERVICE
-@app.route('/users/<int:userID>/services', methods=['POST'])
+@app.route('/users/services/<int:userID>', methods=['POST'])
 @token_required
 def create_service(userID):
     if request.method == 'POST':
@@ -237,7 +237,7 @@ def create_service(userID):
 
 
 #SE MODIFICO PARA QUE SEA POR ID Y SE PUEDAN UPDATEAR TODOS LOS CAMPOS QUE SE QUIERAN
-@app.route('/users/<int:userID>/products/<int:id>', methods=['PUT'])
+@app.route('/users/products/<int:userID>/<int:id>', methods=['PUT'])
 @token_required
 def update_product(userID, id):
     if request.method == 'PUT':
@@ -290,7 +290,7 @@ def update_product(userID, id):
     
 
 #UPDATE STOCK 
-@app.route('/products/update/stock', methods=['PUT'])
+@app.route('/products/stock', methods=['PUT'])
 @token_required
 def update_products():
     cur = mysql.connection.cursor()
@@ -331,7 +331,7 @@ def update_products():
 
 #UPDATE SERVICE
 #SE MODIFICO PARA QUE SEA POR ID Y SE PUEDAN UPDATEAR TODOS LOS CAMPOS QUE SE QUIERAN
-@app.route('/users/<int:userID>/services/<int:id>', methods=['PUT'])
+@app.route('/users/services/<int:userID>/<int:id>', methods=['PUT'])
 @token_required
 def update_service(userID, id):
     if request.method == 'PUT':
@@ -380,9 +380,9 @@ def update_service(userID, id):
         return jsonify({"message": "Servicio actualizado exitosamente"}), 200
 
 
-
+## SE EXPLICA EN LA DOCUMENTACION ESTE CASO EN PARTICULAR COMO ES UN PUT Y LA URL YA EXISTE PARA EL PUT DE ESTE RECURSO
 ####DELETE PRODUCT (borrado logico)
-@app.route('/users/<int:userID>/deleteProduct/<int:id>', methods=['PUT'])
+@app.route('/users/deleteProduct/<int:userID>/<int:id>', methods=['PUT'])
 @token_required
 def delete_product(userID, id):
     if request.method == 'PUT':
@@ -405,7 +405,7 @@ def delete_product(userID, id):
 
 
 ## GET clients BY ID USER
-@app.route('/users/<int:userID>/clients', methods=['GET'])
+@app.route('/users/clients/<int:userID>', methods=['GET'])
 @token_required
 #@user_resources
 def listar_clientes(userID):
@@ -425,7 +425,7 @@ def listar_clientes(userID):
         
 
 #POST CLIENT
-@app.route('/users/<int:userID>/clients', methods=['POST'])
+@app.route('/users/clients/<int:userID>', methods=['POST'])
 @token_required
 def create_client(userID):
     if request.method == 'POST':
@@ -462,7 +462,7 @@ def create_client(userID):
 
 #UPDATE SERVICE
 #SE MODIFICO PARA QUE SEA POR ID Y SE PUEDAN UPDATEAR TODOS LOS CAMPOS QUE SE QUIERAN
-@app.route('/users/<int:userID>/clients/<int:id>', methods=['PUT'])
+@app.route('/users/clients/<int:userID>/<int:id>', methods=['PUT'])
 @token_required
 def update_client(userID, id):
     if request.method == 'PUT':
@@ -526,9 +526,9 @@ def update_client(userID, id):
         return jsonify({"message": "Cliente actualizado exitosamente"}), 200
 
 
-
+## ES UN PUT QUE EN REALIDAD DEBERIA SER UN DELETE MISMO CASO QUE EN EL BORRADO LOGICO
 ####DELETE CLIENT borrado logico
-@app.route('/users/<int:userID>/deleteClient/<int:id>', methods=['PUT'])
+@app.route('/users/deleteClient/<int:userID>/<int:id>', methods=['PUT'])
 @token_required
 def delete_client(userID, id):
     if request.method == 'PUT':
@@ -550,8 +550,9 @@ def delete_client(userID, id):
         return jsonify({"message": "Cliente eliminado exitosamente"}), 200
     
 
+## ES UN PUT QUE EN REALIDAD DEBERIA SER UN DELETE MISMO CASO QUE EN EL BORRADO LOGICO
 ####DELETE Service borrado logico
-@app.route('/users/<int:userID>/deleteService/<int:id>', methods=['PUT'])
+@app.route('/users/deleteService/<int:userID>/<int:id>', methods=['PUT'])
 @token_required
 def delete_service(userID, id):
     if request.method == 'PUT':
@@ -636,7 +637,7 @@ def get_bills_with_client_names(userID):
 
 
 ###Metodo para obtener ultima factura agregada por usuario
-@app.route('/bills/<int:userID>/ultima', methods=['GET'])
+@app.route('/bills/ultima/<int:userID>', methods=['GET'])
 @token_required
 def get_bills(userID):
     try:
@@ -965,8 +966,13 @@ def get_bill_details_rankingCliente(userID):
         return jsonify({"error": str(e)}), 400
 
 
+
+
 if __name__ == '__main__':
     #configuraciones externas
     #un handler manejado por una funcion
     app.register_error_handler(404, pagina_no_encontrada)
+    
     app.run(debug=True, port=4500)
+
+    
