@@ -550,3 +550,11 @@ select[name="Clientes"] {
         display: block; /* Asegura que cada elemento de la lista se muestre en su propia línea */
     }
 }
+
+
+/* ELIMINACION DE IDS EN EL FRONT*/
+
+#table-products th:nth-child(1),
+#table-products td:nth-child(1) {
+        display: none;
+    }
