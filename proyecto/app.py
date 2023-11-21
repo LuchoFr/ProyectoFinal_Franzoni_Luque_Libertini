@@ -382,10 +382,10 @@ def update_service(userID, id):
 
 ## SE EXPLICA EN LA DOCUMENTACION ESTE CASO EN PARTICULAR COMO ES UN PUT Y LA URL YA EXISTE PARA EL PUT DE ESTE RECURSO
 ####DELETE PRODUCT (borrado logico)
-@app.route('/users/deleteProduct/<int:userID>/<int:id>', methods=['PUT'])
+@app.route('/users/products/<int:userID>/<int:id>', methods=['DELETE'])
 @token_required
 def delete_product(userID, id):
-    if request.method == 'PUT':
+    if request.method == 'DELETE':
         # Verificar si el producto a eliminar existe
         cur = mysql.connection.cursor()
         cur.execute('SELECT * FROM Products WHERE userID = %s AND id = %s', (userID, id))
@@ -528,10 +528,10 @@ def update_client(userID, id):
 
 ## ES UN PUT QUE EN REALIDAD DEBERIA SER UN DELETE MISMO CASO QUE EN EL BORRADO LOGICO
 ####DELETE CLIENT borrado logico
-@app.route('/users/deleteClient/<int:userID>/<int:id>', methods=['PUT'])
+@app.route('/users/clients/<int:userID>/<int:id>', methods=['DELETE'])
 @token_required
 def delete_client(userID, id):
-    if request.method == 'PUT':
+    if request.method == 'DELETE':
         # Verificar si el cliente a eliminar existe
         cur = mysql.connection.cursor()
         cur.execute('SELECT * FROM Clients WHERE userID = %s AND id = %s', (userID, id))
@@ -552,10 +552,10 @@ def delete_client(userID, id):
 
 ## ES UN PUT QUE EN REALIDAD DEBERIA SER UN DELETE MISMO CASO QUE EN EL BORRADO LOGICO
 ####DELETE Service borrado logico
-@app.route('/users/deleteService/<int:userID>/<int:id>', methods=['PUT'])
+@app.route('/users/services/<int:userID>/<int:id>', methods=['DELETE'])
 @token_required
 def delete_service(userID, id):
-    if request.method == 'PUT':
+    if request.method == 'DELETE':
         # Verificar si el servicio a eliminar existe
         cur = mysql.connection.cursor()
         cur.execute('SELECT * FROM Services WHERE userID = %s AND id = %s', (userID, id))

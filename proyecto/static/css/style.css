@@ -471,13 +471,14 @@ select[name="Clientes"] {
 .stock-high {
     color: green;
     font-weight: bold;
-}#hamburger-menu {
+    
+}#menu-desplegable {
     display: none; /* Lo oculta inicialmente */
 }
 
 /* Media query para mostrar el botón solo en pantallas pequeñas */
 @media (max-width: 768px) {
-    #hamburger-menu {
+    #menu-desplegable {
         display: block; /* Lo hace visible en pantallas más pequeñas */
         float: right;
     }
@@ -506,6 +507,7 @@ select[name="Clientes"] {
 
       }
 
+    /* SE ESCONDEN COLUMNAS PARA MEJOR VISUALIZACION*/
     #table-products.table-products th:nth-child(3),
     #table-products.table-products td:nth-child(3) {
         display: none;

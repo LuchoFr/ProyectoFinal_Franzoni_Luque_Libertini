@@ -287,8 +287,8 @@ function eliminar(id, userID) {
 
     if (confirmacion) {
         // Realizar una solicitud DELETE para eliminar el producto
-        fetch(`http://127.0.0.1:4500/users/deleteProduct/${userID}/${id}`, {
-            method: 'PUT',
+        fetch(`http://127.0.0.1:4500/users/products/${userID}/${id}`, {
+            method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
                 'x-access-token': token,
@@ -707,8 +707,8 @@ function eliminarServicio(id, userID) {
 
     if (confirmacion) {
         // Realizar una solicitud DELETE para eliminar el servicio
-        fetch(`http://127.0.0.1:4500/users/deleteService/${userID}/${id}`, {
-            method: 'PUT',
+        fetch(`http://127.0.0.1:4500/users/services/${userID}/${id}`, {
+            method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
                 'x-access-token': token,
@@ -1056,9 +1056,9 @@ function eliminarCliente(id, userID) {
     const confirmacion = confirm(`¿Estás seguro de que deseas eliminar el cliente "${Cliente}"?`);
 
     if (confirmacion) {
-        // Realizar una solicitud DELETE para eliminar el producto
-        fetch(`http://127.0.0.1:4500/users/deleteClient/${userID}/${id}`, {
-            method: 'PUT',
+        // Realizar una solicitud DELETE para eliminar el cliente
+        fetch(`http://127.0.0.1:4500/users/clients/${userID}/${id}`, {
+            method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
                 'x-access-token': token,
@@ -1464,11 +1464,12 @@ function historialVentas() {
 }
 
 
+// Es para crear la barra lateral (menu desplegable) en modo responsivo 
 
-const hamburgerMenu = document.getElementById('hamburger-menu');
+const menuCelular = document.getElementById('menu-desplegable');
 const sidebar = document.querySelector('aside');
 
-hamburgerMenu.addEventListener('click', function() {
+menuCelular.addEventListener('click', function() {
     sidebar.style.left = (sidebar.style.left === '0px') ? '-250px' : '0px';
 });
 
