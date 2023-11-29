@@ -62,38 +62,6 @@ def token_required(func):
     return decorated
 
 
-def user_resources(func):
-    @wraps(func)
-    def decorated(*args, **kwargs):
-        print("Argumentos en user_resources: ", kwargs)
-        id_user_route = kwargs['id']
-        user_id = request.headers['user-id']
-        if int(id_user_route) != int(user_id):
-            return jsonify({"message": "No tiene permisos para acceder a este recurso"}), 401
-        return func(*args, **kwargs)
-    return decorated
-
-
-#Esta tambien siempre va despues de def token_required(func)
-#Esta se puede modificar para hacer con producto modificando solo la tabla 
-#todas las rutas donde accedemos a un cliente por su id DELETE MODIFICAR
-def client_resource(func):
-    @wraps(func)
-    def decorated(*args, **kwargs):
-        print("Argumentos en client_resource: ", kwargs)
-        id_cliente = kwargs['id']
-        cur = mysql.connection.cursor()
-        cur.execute('SELECT userID FROM client WHERE id = {0}'.format(id_cliente)) 
-        data = cur.fetchone()
-        if data:
-            id_prop = data[0]
-            user_id = request.headers['user-id']
-            if int(id_prop) != int(user_id):
-                return jsonify({"message": "No tiene permisos para acceder a este recurso"}), 401
-        return func(*args, **kwargs)
-    return decorated
-
-
 def pagina_no_encontrada(error):
     return '<h1> La Pagina que intentas acceder no existe. </h1>', 404
 
@@ -438,7 +406,7 @@ def create_client(userID):
         email = request.get_json()['email']
 
         # Validar que los datos necesarios estén presentes
-        if not name or not lastName or address is None or dni is None or cuit is None or email is None:
+        if not name or not lastName or address is None or dni is None or cuit is None or email is None: #Se coloco en algunos campos is not y en otros is None debido a que si colocaba todos en is None me permitia cargar igual al cliente sin tener todos los datos
             return jsonify({"message": "Faltan datos requeridos"}), 400
 
         # Verificar si un cliente con el mismo dni ya existe
