@@ -160,7 +160,7 @@ function mostrarFactura(clienteSeleccionado) {
     // Verificar si el div con clase "contenido-principal" ya ha sido creado
     contenidoPrincipal = document.querySelector(".contenido-principal");
     contenidoPrincipal.innerHTML = "";
-    let facturaContainer; // Cambio a variable let
+    let facturaContainer; 
 
     if (contenidoPrincipal) {
         // Verificar si la facturaContainer ya ha sido creada
